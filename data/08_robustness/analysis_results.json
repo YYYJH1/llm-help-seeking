@@ -1,0 +1,522 @@
+{
+  "cost": {
+    "n_contrasts": 14,
+    "directions": {
+      "increase": 9,
+      "unresolved": 2,
+      "decrease": 3
+    },
+    "within_five_pp": 8,
+    "positive_and_within_five_pp": 4,
+    "models_increase_or_small_both": 6
+  },
+  "calibration": [
+    {
+      "model": "qwen3-1.7b",
+      "n": 2291,
+      "ece": 0.05439944488326587,
+      "ece_lo": 0.039897415974816317,
+      "ece_hi": 0.07342592444681179,
+      "raw_ece": 0.37190788286826504,
+      "mean_confidence": 0.6070095276547409,
+      "answer_accuracy": 0.5805325185508512
+    },
+    {
+      "model": "qwen3-4b",
+      "n": 2291,
+      "ece": 0.04374471470190896,
+      "ece_lo": 0.03273263099413527,
+      "ece_hi": 0.06067239557887596,
+      "raw_ece": 0.23789929032254598,
+      "mean_confidence": 0.7359551816637601,
+      "answer_accuracy": 0.7197730248799651
+    },
+    {
+      "model": "qwen3-14b",
+      "n": 2291,
+      "ece": 0.0586237096194553,
+      "ece_lo": 0.04561494687200311,
+      "ece_hi": 0.07322955728342624,
+      "raw_ece": 0.17649302816110418,
+      "mean_confidence": 0.816500549832364,
+      "answer_accuracy": 0.791357485814055
+    },
+    {
+      "model": "qwen3-32b",
+      "n": 2291,
+      "ece": 0.03846220225451226,
+      "ece_lo": 0.02960944751104157,
+      "ece_hi": 0.052584151240362455,
+      "raw_ece": 0.12356974051402791,
+      "mean_confidence": 0.8320775974418034,
+      "answer_accuracy": 0.8188563945875164
+    },
+    {
+      "model": "qwen2.5-7b-instruct",
+      "n": 2291,
+      "ece": 0.04538277154137895,
+      "ece_lo": 0.03404165166026277,
+      "ece_hi": 0.06356563903023488,
+      "raw_ece": 0.2124248784526257,
+      "mean_confidence": 0.7400965670115452,
+      "answer_accuracy": 0.7263203841117416
+    },
+    {
+      "model": "gemma-4-e4b-it",
+      "n": 2291,
+      "ece": 0.022145342653900467,
+      "ece_lo": 0.015416552628458697,
+      "ece_hi": 0.04037907294212114,
+      "raw_ece": 0.17004029141381924,
+      "mean_confidence": 0.7615441685853938,
+      "answer_accuracy": 0.7437800087298123
+    },
+    {
+      "model": "smollm3-3b",
+      "n": 2291,
+      "ece": 0.017566147564916257,
+      "ece_lo": 0.014069035971464102,
+      "ece_hi": 0.03978304992892273,
+      "raw_ece": 0.19739935141632337,
+      "mean_confidence": 0.6203410132851073,
+      "answer_accuracy": 0.6237450894805762
+    }
+  ],
+  "triviaqa": [
+    {
+      "model": "gemma-4-e4b-it",
+      "scoring": "primary",
+      "original_calibration_gate_valid": false,
+      "value": 0.27146527777777785,
+      "lo": 0.2621915625,
+      "hi": 0.2803362152777778,
+      "n": 2000
+    },
+    {
+      "model": "gemma-4-e4b-it",
+      "scoring": "full_alias",
+      "original_calibration_gate_valid": false,
+      "value": 0.3007708333333333,
+      "lo": 0.2914787152777778,
+      "hi": 0.30996781249999994,
+      "n": 2000
+    },
+    {
+      "model": "gemma-4-e4b-it",
+      "scoring": "negation",
+      "original_calibration_gate_valid": false,
+      "value": 0.27146527777777785,
+      "lo": 0.2621915625,
+      "hi": 0.2803362152777778,
+      "n": 2000
+    },
+    {
+      "model": "gemma-4-e4b-it",
+      "scoring": "short_boundary",
+      "original_calibration_gate_valid": false,
+      "value": 0.2716875,
+      "lo": 0.2624663888888889,
+      "hi": 0.2805542361111111,
+      "n": 2000
+    },
+    {
+      "model": "olmo-3-7b-instruct",
+      "scoring": "primary",
+      "original_calibration_gate_valid": true,
+      "value": 0.2727833333333333,
+      "lo": 0.2590967708333333,
+      "hi": 0.2857813888888888,
+      "n": 2000
+    },
+    {
+      "model": "olmo-3-7b-instruct",
+      "scoring": "full_alias",
+      "original_calibration_gate_valid": true,
+      "value": 0.2513972222222222,
+      "lo": 0.2370840277777778,
+      "hi": 0.26515892361111115,
+      "n": 2000
+    },
+    {
+      "model": "olmo-3-7b-instruct",
+      "scoring": "negation",
+      "original_calibration_gate_valid": true,
+      "value": 0.27356111111111114,
+      "lo": 0.25978090277777777,
+      "hi": 0.28675635416666667,
+      "n": 2000
+    },
+    {
+      "model": "olmo-3-7b-instruct",
+      "scoring": "short_boundary",
+      "original_calibration_gate_valid": true,
+      "value": 0.27291666666666664,
+      "lo": 0.2591210763888889,
+      "hi": 0.28604624999999995,
+      "n": 2000
+    },
+    {
+      "model": "phi-4-mini-instruct",
+      "scoring": "primary",
+      "original_calibration_gate_valid": false,
+      "value": 0.18313333333333334,
+      "lo": 0.1765123263888889,
+      "hi": 0.19007371527777778,
+      "n": 2000
+    },
+    {
+      "model": "phi-4-mini-instruct",
+      "scoring": "full_alias",
+      "original_calibration_gate_valid": false,
+      "value": 0.1833861111111111,
+      "lo": 0.17709916666666667,
+      "hi": 0.1894455208333333,
+      "n": 2000
+    },
+    {
+      "model": "phi-4-mini-instruct",
+      "scoring": "negation",
+      "original_calibration_gate_valid": false,
+      "value": 0.18300555555555556,
+      "lo": 0.17657461805555558,
+      "hi": 0.18999045138888887,
+      "n": 2000
+    },
+    {
+      "model": "phi-4-mini-instruct",
+      "scoring": "short_boundary",
+      "original_calibration_gate_valid": false,
+      "value": 0.1826222222222222,
+      "lo": 0.17598190972222225,
+      "hi": 0.1895895138888889,
+      "n": 2000
+    },
+    {
+      "model": "qwen2.5-7b-instruct",
+      "scoring": "primary",
+      "original_calibration_gate_valid": true,
+      "value": 0.20193333333333333,
+      "lo": 0.19381086805555556,
+      "hi": 0.2100247222222222,
+      "n": 2000
+    },
+    {
+      "model": "qwen2.5-7b-instruct",
+      "scoring": "full_alias",
+      "original_calibration_gate_valid": true,
+      "value": 0.17893333333333333,
+      "lo": 0.16922090277777774,
+      "hi": 0.18870999999999996,
+      "n": 2000
+    },
+    {
+      "model": "qwen2.5-7b-instruct",
+      "scoring": "negation",
+      "original_calibration_gate_valid": true,
+      "value": 0.20232222222222218,
+      "lo": 0.19419975694444444,
+      "hi": 0.21035048611111107,
+      "n": 2000
+    },
+    {
+      "model": "qwen2.5-7b-instruct",
+      "scoring": "short_boundary",
+      "original_calibration_gate_valid": true,
+      "value": 0.20193333333333333,
+      "lo": 0.19381086805555556,
+      "hi": 0.2100247222222222,
+      "n": 2000
+    },
+    {
+      "model": "qwen3-1.7b",
+      "scoring": "primary",
+      "original_calibration_gate_valid": true,
+      "value": 0.2253277777777778,
+      "lo": 0.21617791666666666,
+      "hi": 0.23451874999999997,
+      "n": 2000
+    },
+    {
+      "model": "qwen3-1.7b",
+      "scoring": "full_alias",
+      "original_calibration_gate_valid": true,
+      "value": 0.22934444444444443,
+      "lo": 0.2201967361111111,
+      "hi": 0.23843788194444443,
+      "n": 2000
+    },
+    {
+      "model": "qwen3-1.7b",
+      "scoring": "negation",
+      "original_calibration_gate_valid": true,
+      "value": 0.22560555555555556,
+      "lo": 0.21647895833333336,
+      "hi": 0.23473013888888888,
+      "n": 2000
+    },
+    {
+      "model": "qwen3-1.7b",
+      "scoring": "short_boundary",
+      "original_calibration_gate_valid": true,
+      "value": 0.2252333333333333,
+      "lo": 0.216025,
+      "hi": 0.23447124999999996,
+      "n": 2000
+    },
+    {
+      "model": "qwen3-14b",
+      "scoring": "primary",
+      "original_calibration_gate_valid": true,
+      "value": 0.1799888888888889,
+      "lo": 0.17249118055555557,
+      "hi": 0.18777222222222217,
+      "n": 2000
+    },
+    {
+      "model": "qwen3-14b",
+      "scoring": "full_alias",
+      "original_calibration_gate_valid": true,
+      "value": 0.171875,
+      "lo": 0.16388288194444445,
+      "hi": 0.17996711805555551,
+      "n": 2000
+    },
+    {
+      "model": "qwen3-14b",
+      "scoring": "negation",
+      "original_calibration_gate_valid": true,
+      "value": 0.18076666666666666,
+      "lo": 0.17312847222222222,
+      "hi": 0.18857031249999998,
+      "n": 2000
+    },
+    {
+      "model": "qwen3-14b",
+      "scoring": "short_boundary",
+      "original_calibration_gate_valid": true,
+      "value": 0.17985277777777775,
+      "lo": 0.17234149305555554,
+      "hi": 0.1876736458333333,
+      "n": 2000
+    },
+    {
+      "model": "qwen3-4b",
+      "scoring": "primary",
+      "original_calibration_gate_valid": true,
+      "value": 0.2342597222222222,
+      "lo": 0.22289149305555556,
+      "hi": 0.24582774305555552,
+      "n": 2000
+    },
+    {
+      "model": "qwen3-4b",
+      "scoring": "full_alias",
+      "original_calibration_gate_valid": true,
+      "value": 0.21587916666666665,
+      "lo": 0.2046082986111111,
+      "hi": 0.22796986111111112,
+      "n": 2000
+    },
+    {
+      "model": "qwen3-4b",
+      "scoring": "negation",
+      "original_calibration_gate_valid": true,
+      "value": 0.23489861111111107,
+      "lo": 0.2239332638888889,
+      "hi": 0.24658034722222222,
+      "n": 2000
+    },
+    {
+      "model": "qwen3-4b",
+      "scoring": "short_boundary",
+      "original_calibration_gate_valid": true,
+      "value": 0.23436527777777774,
+      "lo": 0.22297083333333334,
+      "hi": 0.24600156249999997,
+      "n": 2000
+    },
+    {
+      "model": "smollm3-3b",
+      "scoring": "primary",
+      "original_calibration_gate_valid": true,
+      "value": 0.2182444444444444,
+      "lo": 0.2063853125,
+      "hi": 0.23008961805555556,
+      "n": 2000
+    },
+    {
+      "model": "smollm3-3b",
+      "scoring": "full_alias",
+      "original_calibration_gate_valid": true,
+      "value": 0.2051361111111111,
+      "lo": 0.19280468750000002,
+      "hi": 0.21770812499999997,
+      "n": 2000
+    },
+    {
+      "model": "smollm3-3b",
+      "scoring": "negation",
+      "original_calibration_gate_valid": true,
+      "value": 0.22097777777777777,
+      "lo": 0.20917204861111108,
+      "hi": 0.23280777777777778,
+      "n": 2000
+    },
+    {
+      "model": "smollm3-3b",
+      "scoring": "short_boundary",
+      "original_calibration_gate_valid": true,
+      "value": 0.21810555555555555,
+      "lo": 0.2063680208333333,
+      "hi": 0.22996062500000003,
+      "n": 2000
+    }
+  ],
+  "cost_only": [
+    {
+      "model": "gemma-4-e4b-it",
+      "development_accuracy": 0.516,
+      "same_decisions": true,
+      "cost_only_gain": 0.27146527777777785,
+      "cost_only_lo": 0.2621915625,
+      "cost_only_hi": 0.2803362152777778,
+      "item_confidence_increment": 0.0,
+      "increment_lo": 0.0,
+      "increment_hi": 0.0,
+      "n": 2000
+    },
+    {
+      "model": "olmo-3-7b-instruct",
+      "development_accuracy": 0.392,
+      "same_decisions": false,
+      "cost_only_gain": 0.2762888888888889,
+      "cost_only_lo": 0.26221875,
+      "cost_only_hi": 0.2899065625,
+      "item_confidence_increment": -0.003505555555555557,
+      "increment_lo": -0.007153055555555558,
+      "increment_hi": -7.194444444444713e-05,
+      "n": 2000
+    },
+    {
+      "model": "phi-4-mini-instruct",
+      "development_accuracy": 0.465,
+      "same_decisions": false,
+      "cost_only_gain": 0.1847361111111111,
+      "cost_only_lo": 0.17828805555555555,
+      "cost_only_hi": 0.19155034722222222,
+      "item_confidence_increment": -0.0016027777777777774,
+      "increment_lo": -0.004662152777777776,
+      "increment_hi": 0.0016029861111111108,
+      "n": 2000
+    },
+    {
+      "model": "qwen2.5-7b-instruct",
+      "development_accuracy": 0.564,
+      "same_decisions": false,
+      "cost_only_gain": 0.20516111111111107,
+      "cost_only_lo": 0.196605,
+      "cost_only_hi": 0.2132907291666666,
+      "item_confidence_increment": -0.003227777777777777,
+      "increment_lo": -0.007066666666666665,
+      "increment_hi": 0.000658819444444442,
+      "n": 2000
+    },
+    {
+      "model": "qwen3-1.7b",
+      "development_accuracy": 0.248,
+      "same_decisions": false,
+      "cost_only_gain": 0.2347,
+      "cost_only_lo": 0.2254984027777778,
+      "cost_only_hi": 0.24378552083333332,
+      "item_confidence_increment": -0.009372222222222221,
+      "increment_lo": -0.012489791666666668,
+      "increment_hi": -0.006333194444444445,
+      "n": 2000
+    },
+    {
+      "model": "qwen3-14b",
+      "development_accuracy": 0.625,
+      "same_decisions": false,
+      "cost_only_gain": 0.18990555555555552,
+      "cost_only_lo": 0.1825890625,
+      "cost_only_hi": 0.19771461805555554,
+      "item_confidence_increment": -0.00991666666666666,
+      "increment_lo": -0.01396694444444444,
+      "increment_hi": -0.0058631944444444434,
+      "n": 2000
+    },
+    {
+      "model": "qwen3-4b",
+      "development_accuracy": 0.398,
+      "same_decisions": false,
+      "cost_only_gain": 0.24517916666666667,
+      "cost_only_lo": 0.23326100694444443,
+      "cost_only_hi": 0.25712694444444445,
+      "item_confidence_increment": -0.010919444444444449,
+      "increment_lo": -0.015855555555555557,
+      "increment_hi": -0.006362916666666676,
+      "n": 2000
+    },
+    {
+      "model": "smollm3-3b",
+      "development_accuracy": 0.488,
+      "same_decisions": false,
+      "cost_only_gain": 0.22316666666666662,
+      "cost_only_lo": 0.21192555555555553,
+      "cost_only_hi": 0.23433958333333332,
+      "item_confidence_increment": -0.004922222222222221,
+      "increment_lo": -0.008492152777777777,
+      "increment_hi": -0.001433333333333333,
+      "n": 2000
+    }
+  ],
+  "primary_invariants": [
+    {
+      "model": "gemma-4-e4b-it",
+      "primary_point_matches_published": true,
+      "max_z_difference": 0.0
+    },
+    {
+      "model": "olmo-3-7b-instruct",
+      "primary_point_matches_published": true,
+      "max_z_difference": 2.220446049250313e-16
+    },
+    {
+      "model": "phi-4-mini-instruct",
+      "primary_point_matches_published": true,
+      "max_z_difference": 2.220446049250313e-16
+    },
+    {
+      "model": "qwen2.5-7b-instruct",
+      "primary_point_matches_published": true,
+      "max_z_difference": 1.1102230246251565e-16
+    },
+    {
+      "model": "qwen3-1.7b",
+      "primary_point_matches_published": true,
+      "max_z_difference": 1.1102230246251565e-16
+    },
+    {
+      "model": "qwen3-14b",
+      "primary_point_matches_published": true,
+      "max_z_difference": 2.220446049250313e-16
+    },
+    {
+      "model": "qwen3-4b",
+      "primary_point_matches_published": true,
+      "max_z_difference": 1.1102230246251565e-16
+    },
+    {
+      "model": "smollm3-3b",
+      "primary_point_matches_published": true,
+      "max_z_difference": 2.220446049250313e-16
+    }
+  ],
+  "conventions": {
+    "bootstrap_resamples": 2000,
+    "seed": 0,
+    "interval": "95% percentile, paired questions; 18 conditions averaged within question",
+    "cost_only": "Question-level confidence replaced by development-set answer accuracy. Same action within condition; no held-out labels used for policy selection.",
+    "sensitivity": "Use the archived development fit for each scoring rule. Keep original stated accuracy 0.64, candidates, costs, choices and all eight displayed models."
+  }
+}

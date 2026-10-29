@@ -1,0 +1,427 @@
+# Confirmation configuration for the MMLU-Redux holdout batch (version killtest_v2). Companion of configs/prompts/ask_v1_1.yaml.
+# The confirmatory entries scripts/run_c1_confirm.py and scripts/run_mechanism_confirm.py read it with --config configs/v6_confirm.yaml --expect-config-md5 <md5>; the md5 is recorded in the batch manifest.
+#
+# This file is the base configuration killtest_v1_1 (not distributed) with these changes only:
+#   version killtest_v2: the loader accepts version killtest_v<N> only, and v2 names the protocol of the confirmatory batch. The manifests of the confirmatory runs record the pre-registration text under the
+#     key prereg (scripts/_confirm_common.confirm_manifest_block); the prompts and the read-outs of the confirmatory runs are those of
+#     ask_v1_1.yaml (the assistant prefix "Answer: " of the P-answer);
+#   models.devices: the seven main models, with the ids, paths and layer counts of the development runs (the three of the base file, then Qwen2.5-7B-Instruct, Qwen3-14B, Qwen3-32B, SmolLM3-3B);
+#   des.run_cap_total and des.c4_matched.runs: the counts of the older schema for seven devices (see there), only so that the file loads;
+#   gpu_budget_hours: 40.
+# Everything else is as in the base file: the prompts, the read-out (one token over "1" to "5", digit-mass gate 0.5, gate pass rate 0.99), the float32 HF reference with calibrated tolerances
+# (readout.hf_cross_check), the float32 HF read-outs of the steering stage (steering.hf_precision), the psychometric grid (a_H x c0 x w = 3 x 3 x 6 = 54 cells), the seed namespace and the data and holdout block.
+#
+# family is a placeholder. The schema accepts qwen3 and gemma4 only, so Qwen2.5-7B-Instruct and SmolLM3-3B carry qwen3. No confirmatory code reads it: the
+# institution of a model is mapped by its id, and no family, institution or figure may be inferred from this field.
+#
+# Numeric settings of the confirmatory runs. They are command-line arguments of the entries, are recorded in the manifest of every run under numeric and, when the batch manifest has a
+# numeric block, are checked against it before the pool is loaded. All: vLLM offline, bfloat16 activations, seed 0, --max-model-len 4096, as in the development runs. Model by model:
+#   qwen3-14b: online FP8 weights, --gpu-mem-util 0.80 --llm-kwargs '{"quantization": "fp8"}' (the card is shared, the model must fit one card; no float32 reference exists for it);
+#   qwen3-32b: the AWQ 4-bit checkpoint (qwen3-32b-awq), --gpu-mem-util 0.85;
+#   the other five (bfloat16 weights): --gpu-mem-util as in the development runs, chosen from the free memory of the card just before the run and written into the batch protocol.
+# The id qwen3-32b is the id used in the development runs; models.helpers keeps its own entry qwen3-32b-awq.
+version: killtest_v2
+revision: R7
+
+paths:
+  results_root: results            # results/<stage>/<YYYYMMDD_HHMMSS>_<tag>/ with manifest.json
+  evidence_root: evidence
+  tmp_root: /path/to/tmp
+
+execution:
+  code_writing: not recorded
+  gpu_runs: local host
+  read_only_review: not recorded
+
+models:
+  devices:
+    - {id: qwen3-1.7b, path: /path/to/models/qwen3-1.7b, family: qwen3, chat_template_kwargs: {enable_thinking: false}, layers: 28}
+    - {id: qwen3-4b, path: /path/to/models/qwen3-4b, family: qwen3, chat_template_kwargs: {enable_thinking: false}, layers: 36}
+    - {id: gemma-4-e4b-it, path: /path/to/hf_hub/models--google--gemma-4-E4B-it/snapshots/ee0ef6023621cff504d758262d4e04895a5af4a2, family: gemma4, chat_template_kwargs: {enable_thinking: false}, layers: 42}   # google/gemma-4-E4B-it: pinned HF snapshot, weights sha256 checked; the template default is also non-thinking
+    # ---- the four further main models: ids, paths and layer counts as in the development runs; family is a placeholder (see the header)
+    - {id: qwen2.5-7b-instruct, path: /path/to/models/qwen2.5-7b-instruct-fresh, family: qwen3, chat_template_kwargs: {enable_thinking: false}, layers: 28}   # Qwen2.5-7B-Instruct, bfloat16
+    - {id: qwen3-14b, path: /path/to/models/qwen3-14b, family: qwen3, chat_template_kwargs: {enable_thinking: false}, layers: 40}   # bfloat16 checkpoint, run with online FP8 weights: --gpu-mem-util 0.80 --llm-kwargs '{"quantization": "fp8"}'
+    - {id: qwen3-32b, path: /path/to/models/qwen3-32b-awq, family: qwen3, chat_template_kwargs: {enable_thinking: false}, layers: 64}   # the AWQ 4-bit checkpoint: --gpu-mem-util 0.85
+    - {id: smollm3-3b, path: /path/to/hf_hub/models--HuggingFaceTB--SmolLM3-3B/snapshots/a07cc9a04f16550a088caea529712d1d335b0ac1, family: qwen3, chat_template_kwargs: {enable_thinking: false}, layers: 36}   # HuggingFaceTB/SmolLM3-3B, pinned HF snapshot, bfloat16
+  device_substitution_order: [qwen3-0.6b, qwen3-8b]
+  loop_devices: [qwen3-1.7b, qwen3-4b]
+  steering_device: qwen3-4b
+  helpers:
+    - {id: qwen3-32b-awq, path: /path/to/models/qwen3-32b-awq, role: main, chat_template_kwargs: {enable_thinking: false}}   # the Qwen3 template defaults to thinking mode
+    - {id: qwen3-8b, path: /path/to/models/qwen3-8b, role: weak_exploratory, chat_template_kwargs: {enable_thinking: false}}
+
+data:
+  item_key: "sha256(normalize(question) + '|' + normalize(correct_answer_text))"
+  normalize: "NFKC, lowercase, collapse whitespace, strip trailing period"
+  simpleqa_mc:
+    source: /path/to/kumaran2026_osf
+    calibration_file: phase0_questions.csv
+    evaluation_file: phase1_questions.csv
+    full_file: simpleQA_4MCQ_dataset.csv       # 4,326 items; different foil generation
+    ground_truth_column: choice_1              # phase files; full file uses gt_answer
+    arrangement_seed: 1042
+  mmlu_redux:
+    source: /path/to/hf_hub/datasets--edinburgh-dawg--mmlu-redux-2.0/snapshots/372ea425445d51e1ba1188c56e5e893f8138621f
+    keep_error_type: [ok]                      # 5,330 of 5,700 rows; 39 repeat an earlier item key, so 5,291 unique items
+    calibration_n: 1000
+    evaluation_n: 2000
+    stratify_by: subject
+    split_seed: 42
+    shuffled_copy_seed: 1042
+  holdout:
+    mmlu_redux_holdout: {rule: "ok items not in cal or eval (by item_key)", n: 2291, role: primary_confirmation}   # 5,291 unique - 1,000 - 2,000
+    simpleqa_mc_holdout: {rule: "full_file minus phase0 and phase1 (by item_key)", n: 2326, role: transfer_robustness_only}
+    sealing:
+      script: scripts/seal_holdout.py   # the sealing script of the study; not part of this release (nmi.config checks this value)
+      sole_key_generator_and_pool_assigner: true
+      outputs: [key_lists, key_list_hashes, pool_counts, locator_to_key_map, sealing_log]   # map bound to input file hashes
+      loaders: "locate rows through locator_to_key_map, then filter by the frozen key lists; assert no holdout key passes"
+      holdout_content_never_enters_experiments: true
+    unseal_marker: results/HOLDOUT_UNSEALED_BY_AUTHOR
+    consumption_ledger: {path: results/holdout_ledger.jsonl, unit: item_key, consumed_is_permanent: true, batch_may_include_multiple_models_and_arms: true}
+
+prompts:
+  file: configs/prompts/ask_v1_1.yaml
+  ask_keep_max: 3
+  primary_paraphrase: screening_rank_1
+  screening:
+    split: calibration
+    diagnostic_conditions:                     # [a_H, c0, w]
+      - [0.80, 0.0, 0.0]
+      - [0.80, 0.0, 0.2]
+      - [0.80, 0.0, 0.45]
+      - [0.80, 0.0, 0.8]
+    middle_condition: [0.80, 0.0, 0.2]
+    min_gate_pass_rate: 0.99
+    ask_rate_bounds: [0.05, 0.95]
+    max_spearman_w: -0.8
+    rank_by: point_biserial_confidence_vs_ask
+  block_position_check: {paraphrase: primary, split: calibration, conditions: diagnostic_conditions, role: exploratory}
+
+grid:
+  operating_curve:
+    a_H: operating                             # helper CoT accuracy on the pool, rounded to 0.05
+    c0: [0.0]
+    w: [0.0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.45, 0.6, 0.8, 1.0, 1.2, 1.5, 2.0, 3.0, 5.0]
+  psychometric:
+    a_H: [0.60, 0.80, 0.95]
+    c0: [0.0, 0.1, 0.2]
+    w: [0.0, 0.1, 0.2, 0.45, 0.8, 1.5]
+  f1_paired:
+    f1: {a_H: [0.80], c0: [0.0], kappa: [0.01, 0.03], D_hat_s: [0, 10, 20, 40]}
+    f2_matches: {a_H: [0.80], c0: [0.0], w: [0.1, 0.2, 0.3, 0.4, 0.6, 1.2]}
+  displayed_w: {quantum: 0.01, cap: 5.0}       # same rule in measurement, DES, fluid model and loop
+
+readout:
+  device_tokens: ["1", "2", "3", "4", "5"]
+  ask_token: "5"
+  decision: digit_conditional_argmax           # m = logP(5) - max_i logP(i); m > 0 asks; m = 0 answers
+  vllm_offline: {max_tokens: 1, temperature: 0.0, logprob_token_ids: device_tokens}
+  vllm_http: {max_tokens: 1, temperature: 0.0, logprobs: 5, logprob_token_ids: device_tokens}
+  record: [digit_logprobs, digit_mass, free_greedy_token_id, margin]
+  digit_mass_gate: 0.5
+  min_gate_pass_rate: 0.99
+  hf_cross_check:
+    pool: mmlu_redux_eval
+    seed_cell: hf_cross_check
+    target_non_tie_items: 150
+    max_items_drawn: 300
+    near_tie_abs_margin: 0.05                  # the original near-tie rule: reported next to the calibrated-tolerance rule (which uses delta_m and delta_opt below)
+    max_disagreements_non_tie: 0
+    reference:                                 # the HF side is read one prompt at a time, in float32, without autocast and TF32
+      dtype: float32
+      batch_size: 1
+      autocast: false
+      tf32: false
+      devices: [cuda, cpu]                     # either one; the device of a run is written into its record, equality across devices is not claimed
+    noise_calibration:                         # the engineering tolerances delta_m and delta_opt, measured on the calibration pool
+      pool: mmlu_redux_cal
+      seed_cell: hf_noise_calibration          # full key (9, 8, 9001, 0xA0): seeds.rng(key).permutation(n_pool)[:n_items], without replacement
+      rep: 9001
+      n_items: 100
+      prompt: {paraphrase: a00, framing: f2, layout: standard, a_H: 0.80, c0: 0.0, w: 0.2}
+      multiplier: 1.5                          # delta = max(floor, step * ceil(multiplier * max_j e_j / step)), here 0.25 * max(1, ceil(6 * max_j e_j))
+      step: 0.25
+      floor: 0.25
+  helper_cot:
+    temperature: 0.0
+    answer_regex: 'Answer:\s*([1-4])'          # last match wins; no match counts as wrong
+    truncation_preflight: {n_items: 50, split: calibration, max_length_finish_rate: 0.05, max_tokens_options: [512, 1024]}
+    max_tokens: from_truncation_preflight
+
+calibration:
+  method: temperature_scaling
+  ece_bins: 15
+  correctness_map:
+    object: r_hat(z, w)
+    method: logistic                         # main estimator
+    sensitivity_method: isotonic             # the isotonic keys below describe this sensitivity version
+    logistic:
+      model: "logit r = alpha + beta * logit(clip(z, 0.25, 1 - 1e-4)) + gamma * w, maximum likelihood"
+      z_clip: [0.25, 0.9999]
+      threshold: "logit(T) = (logit(t) - alpha - gamma * w) / beta with t = a_H - c0 - w"
+      derivatives: {r_z: "beta * t * (1 - t) / (T * (1 - T))", r_w: "gamma * t * (1 - t)"}
+      na: [beta_not_positive, target_outside_unit_interval, threshold_outside_observed_range, plateau, theta_star_too_small, fit_not_converged]
+      shape_check: "descriptive only: the K1(iii) misfit rule and a chi-square omnibus test on z deciles x fitted w (low power at 1,000 items); R is always reported with both methods, and a qualitative statement (R above or below 1) is made only when both methods put R on the same side of 1 with 95% intervals excluding 1"
+    target: p_ask_self_answer_correct
+    split: calibration
+    fixed: {a_H: 0.8, c0: 0.0}
+    fitted_w: [0.0, 0.2, 0.45, 0.8]
+    r_w_zero_if_max_abs_diff_vs_w02_le: 0.03   # on the common z support
+    if_r_w_zero: nearest_fitted_w
+    else: linear_interpolation_between_neighbouring_fitted_w_clamped_to_0_0.8
+    threshold: "lower inverse T = inf{z: r_hat(z, w) >= a_H - c0 - w}, r_hat linear between isotonic knots; NA if outside the range"
+    r_z: {difference: central, step: 0.05, at_support_edge: one_sided, na_if_le: 0.01}
+    r_w: "between two nodes: those nodes; exactly on an interior node: central difference of its two neighbours; on an end node: one-sided"
+    equidistant_nearest_tie: smaller_w
+    theta_star: "(1 + r_w) / r_z; NA if <= 0.01"
+
+psychometrics:
+  model: "logit P(ask) = b0 + bz*z + bh*a_H + bc*c0 + bw*w + paraphrase_fixed_effects"
+  responsiveness: {theta_w: "bw/bz", theta_c: "bc/bz", theta_h: "-bh/bz"}
+  rationality_ratio: "theta_w / theta_star (relative to the stated information)"
+  bootstrap: {unit: item, n: 2000, ci: 0.95, method: percentile, refit_r_hat: true}
+  misfit: {bins: "z deciles x w levels", severe_if: "share of bins with |standardized residual| > 3 exceeds 0.10"}
+  consistency: {measure: p_answer_vs_p_ask_self_answer_agreement, sensitivity_with_z_ask_if_below: 0.80}
+
+demand:
+  empirical: {name: f_emp, method: item_margin_linear_interpolation_on_quantized_w, lattice: 0.01, smoothing: none, used_by: [des, fluid]}
+  analytic:
+    name: f_hat
+    steps: [isotonic_decreasing_on_grid_nodes, piecewise_linear_in_u, constant_extension, gaussian_kernel_in_u, numeric_derivative_in_u, chain_rule_to_w]
+    u: "log(w + 0.05)"
+    u_grid: {from: "log(0.05) - 4h", to: "log(5.05) + 4h", step: 0.001}
+    bandwidth_h: 0.15
+    kernel: {type: gaussian, truncate_at: 4h, renormalize: true}
+    derivative_w: "f_hat'_u / (w + 0.05)"
+    sensitivity_h: [0.08, 0.30]
+    used_by: [elasticity, gamma, c4_kappa, c4_surrogate_controller, c1b]
+  operating_point:
+    rule: "w_star = inf{w in [0, 5]: f_hat(w) <= 1/rho}"
+    solver: {method: bisection, tolerance: 1.0e-6}
+    light_if: "1/rho > f_hat(0)"
+    overload_if: "1/rho < f_hat(5.0)"
+    na_if: ["w_star == 0 (zero delay)", "f_hat(w_star) == 0", "f_hat'_w(w_star) >= 0"]
+  elasticity: "|w f_hat'_w(w)| / f_hat(w)"
+  nonmonotone_item: "margin changes sign more than once over the w grid; kept as is in replay"
+  c1b: {role: descriptive, report: relative_error_with_bootstrap_ci}
+
+steering:
+  model: steering_device
+  hf_precision: {dtype: float32, autocast: false, tf32: false}   # every HF read-out of the steering stage (vector residuals, selection, confirmation, random directions, baselines, G1, G2)
+  primary_vector:
+    prompt: p_answer
+    split: calibration
+    pool: mmlu_redux
+    select_by: calibrated_z_among_correct
+    n_high: 25
+    n_low: 25
+    candidate_multiplier: 3
+    max_choice_share: 0.28
+    max_choice_share_fallback: 0.35            # if still insufficient: K4 inconclusive (vector cannot be built)
+    residual_norm_fraction: 0.03
+    position: last_token
+  secondary_vector: {prompt: p_ask, condition: [0.80, 0.0, 0.2], margin: "max option prob - P(5)", margin_selection_temp: 5.1, n_high: 25, n_low: 25, candidate_multiplier: 3, max_choice_share: 0.28, residual_norm_fraction: 0.03, role: replication_only}
+  layers: [14, 16, 18, 20, 22, 24, 26, 28]
+  alphas: [0.5, 1, 2, 4]
+  directions: [high_conf, low_conf]
+  items: {pool: mmlu_redux_eval, n: 1200, stratify_by: subject, seed: 42, select: 200, confirm: 1000}   # G1 and G2 use the first 400 confirm items by sha256(42|steering_select|key)
+  conditions: {w: [0.0, 0.2, 0.45], a_H: 0.80, c0: 0.0}
+  effect_sign: "E and dz are positive in the expected direction (high_conf lowers asking and raises z; low_conf the reverse)"
+  selection: {objective: max_E, constraint: "forced accuracy drop <= 5 pp on select items", tie_break: [smaller_alpha, shallower_layer, high_conf_first], none_feasible: K4_fail}
+  random_control: {n_directions: 20, seeds: [9101, 9120], norm: match_primary_vector, role: ranking_only_no_p_value}
+  logit_bias_control: {token: "5", sign: same_as_primary_effect, search: {method: bisection, range: [-10, 10], tolerance_pp: 1}, calibrated_on: select_items, unreachable: report_control_not_calibrated, affects_k4: false}
+  bootstrap: {unit: item, n: 2000, method: percentile}
+  k4m: {model: frozen_psychometric_fit_on_unsteered_eval, report: [predicted_over_observed_ratio, residual_direct_effect_ci]}
+  permutation_null: {n_vectors: 10, role: "deferred to the main phase; not run in the kill test; seed registered then"}
+  gate:
+    pass_all: ["E >= 15 pp and CI lower > 0", "dz CI lower > 0", "forced accuracy change CI lower > -5 pp", "abs ask change strictly above all 20 random directions (ties fail)", "gate pass rate >= 0.99"]
+    fail_any: ["E CI upper < 15 pp", "dz CI upper < 0", "forced accuracy change CI upper < -5 pp", "not ranked first", "gate pass rate < 0.99", "no configuration meets the accuracy constraint"]
+    inconclusive: ["otherwise", "primary vector cannot be built"]
+
+server_calibration:
+  helper: qwen3-32b-awq
+  kv_cache_dtype: fp8
+  max_num_seqs: [16, 32]
+  concurrency_levels: [1, 2, 4, 8, 16, 24, 32, 48]
+  seconds_per_level: 120
+  itl_w3: "per level: increment of inter_token_latency_seconds sum / increment of its count"
+  interpolation: {between_measured: linear, below_1: value_at_1, above_max: value_at_max}
+  record: [throughput, v_m, itl_w3_m, prefill_time, metrics_snapshot]
+  decision_latency: {measure_under_loop_like_load: true, classes: 4, class_value: within_class_mean}
+  itl_approximation_check: {when: after_w3_before_w11, max_rel_deviation: 0.05}
+
+des:
+  pool: mmlu_redux_eval
+  robustness_pool: simpleqa_mc_eval
+  n_devices: 32
+  deadline_s: 120                              # from question arrival
+  window_s: 15
+  grid:
+    rho: "0.5 * 8**(j/16), j = 0..16"          # 17 log-spaced points, step about 13.9%
+    kappa: [0.0025, 0.005, 0.01, 0.02, 0.04]
+    broadcast_period_s: [2, 5, 10]
+  run: {duration_s: 2400, warmup_s: 600}
+  seeds: [42, 43, 44, 45, 46]
+  point_label: "majority of 5 seeds per dimension; osc dimension IND if neither OSC nor NOOSC has >= 3 votes"
+  scale_transform: {rule: "v4(m) = v(m/4), M4 = 4M, Lambda4 = 4 Lambda", assert_equilibrium_rel_diff_le: 0.01, applied_to: runs_labelled_OSC_at_scale_1}
+  pointwise_comparison: {unit: grid_point_and_dimension, not_evaluable_if_either_IND: true}
+  transition_localisation: {method: bisection_between_adjacent_points, role: exploratory_figures_only}
+  run_cap_total: 24000                         # older schema, loads only: the validation needs 2 x the formal grid (7 devices x 17 rho x 5 kappa x 3 broadcast x 5 seeds = 8,925) + 2 x des.c4_matched.runs.total (2,970) = 23,790 <= this value. Not a budget: no confirmatory entry runs the DES
+  cpu: {max_processes: 32, threads_per_process: 1, nice: 10, timing_pilot: first_50_runs_of_ladder_level_1, projection: "worst-case counts of ladder + kill test, scale-4 runs at 4x the pilot time", report_to_author_if_projected_wall_h_above: 48, no_silent_reduction: true}
+  c4_matched:
+    system: continuous_surrogate                # devices ask with probability f_hat_m(w) in both fluid and DES
+    w_quantisation: none                       # the only exception to grid.displayed_w
+    feasibility: ["1/rho in (f_hat_m(5), f_hat_m(0))", "D_target >= service time + decision latency + 1 s", "server saturated at the fluid equilibrium"]
+    infeasible: NA_with_reason
+    service_length: fixed_pooled_mean
+    decision_latency: fixed_w3_median
+    deadline_s: 600
+    broadcast_period_s: [2, 5, 10]             # each paired separately
+    seeds: [42, 43, 44, 45, 46]
+    labels: classifier_with_scale_check
+    runs: {llm_pairs: 189, non_llm_control: 216, replay: 189, seeds_per_condition: 5, total: 2970, scale_checks_max: 2970, infeasible_not_run: true}   # older schema, loads only: 7 devices x 27 conditions (D_target 3 x rho 3 x broadcast 3) = 189 pairs and as many replay runs; 8 elasticities x 27 = 216 non-LLM controls; (189 + 216 + 189) x 5 seeds = 2,970 (nmi/config.py checks these sums); no DES run is made from it
+    kappa_rule: "kappa_m = f_hat_m^-1(1/rho) / D_target"
+    D_target_s: [10, 20, 40]
+    rho: [1.5, 2.0, 3.0]
+    non_llm_control: {family: logistic, elasticities_geometric: [0.5, 4.0], n: 8}
+    replay_version: {role: exploratory, acceptance: "|rho f_emp(w_star_q) - 1| <= 0.05 else drop the pair with the reason"}
+  mechanism_switches: [service_length, cancellation, signal_type, broadcast_discrete, decision_latency]
+  fresh_signal_control: true
+
+fluid:
+  model: cohort_fcfs
+  length_atoms: {n: 64, value: "l_(ceil(n p_c)) with p_c = (c - 0.5)/64 over the ascending sample of the asked subset", mass: "1/64", conditioned_on: decision_time_w, escalation_n: 256}
+  decision_latency_classes: {n: 4, value: within_class_mean}
+  arrivals: "sum_k p_k Lambda f_emp(w(t - d_k))"
+  dt_s: 0.05
+  conservation_tolerance: 1.0e-9
+  broadcast: exact_discrete
+  labels: "same classifier; counts are expected counts; CV is the ordinary coefficient of variation"
+  analytic: "Gamma = elasticity_star * tau / D_star; kernel = pure delay D_star - E[d_dec] (helper-side FIFO sojourn; D_star counts from question arrival) in series with window W, decision-latency distribution and ZOH approximation; tau = D_star + W/2 + Delta/2; local instability iff Gamma > Gamma_c; equality is a boundary"
+
+regimes:
+  sample: "questions whose arrival time falls in [warmup end, warmup end + 1200 s)"
+  ask_time_for_binning: client_helper_sent
+  sat_dimension:
+    timeout_rate: "timeouts / asks among the sample"
+    mean_latency: "arrival to helper completion over asks; timeouts counted as T_dl"
+    rule: "SAT if timeout rate >= 0.10 or mean latency >= 0.8 T_dl; NOSAT otherwise or if there are no asks"
+  osc_dimension:
+    bins: {first_s: 5, fallback_s: 10, min_mean_count: 10, ind_if_still_below: true}
+    detrend: "least-squares linear fit removed, mean added back"
+    cv_excess: "sqrt(max(0, var_(n-1) - mean)) / mean"
+    period: {method: fft_no_window, range_s: [20, 300], undetectable_if_peak_at_range_edge: true, min_cycles: 4}
+    acf: {formula: "sum_{t<=n-L}(x_t - xbar)(x_{t+L} - xbar) / sum_t (x_t - xbar)^2", lag_bins: "round(P/h), round(3P/h), halves up"}
+    rule: ["NOOSC if CV_ex < 0.25", "OSC if CV_ex >= 0.25, period detectable, acf(L1) >= 0.3 and acf(L3) >= 0.2", "IND otherwise"]
+    des_scale_check: {min_cv_ratio: 0.7, otherwise: IND}
+  combined: {"NOOSC,NOSAT": STB, "NOOSC,SAT": SAT, "OSC,NOSAT": OSC, "OSC,SAT": OSC+SAT, "IND,NOSAT": IND, "IND,SAT": SAT/IND}
+  predicted_labels: {representation: "tuple (osc, sat); combined names are display only", sat_IND_source: "ladder approximation mask, fluid predictions only", display_sat_IND: "IND*", distance_and_eligibility_use: tuple, des_and_loop_sat_IND: never}
+  loop_label: from_loop_data_only
+  sensitivity_cv: [0.15, 0.35]
+  validation:
+    replicates: 100
+    warmup_s: 300
+    measure_s: 1200
+    arrivals: nonhomogeneous_poisson_by_thinning
+    base_rate_per_s: 5
+    non_timeout_latency_s: 10
+    timeout_latency_s: 120
+    seed_cell: regime_validation
+    cases:
+      - {name: poisson, rate: 5, expected: [STB]}
+      - {name: strong_sinusoid, rate: "5(1 + 0.6 sin(2 pi t / 60))", expected: [OSC]}
+      - {name: near_hopf_stable, rate: "5 max(0, 1 + x(t))", model: "x' = -b x(t-20) + sigma xi, b tau = 0.9 pi/2", integrator: {method: euler_maruyama, dt: 0.05, initial_history: 0}, sigma: "calibrated by a 20000 s pre-run so that sd(x) = 0.15", expected: [STB, IND], max_osc_count: 1}
+      - {name: low_counts, rate: 0.5, expected: [IND]}
+      - {name: slow_drift, rate: "3 to 7 linear over the measurement", expected: [STB]}
+      - {name: osc_with_timeouts, base: strong_sinusoid, timeout_rate: 0.2, expected: [OSC+SAT]}
+      - {name: timeouts, base: poisson, timeout_rate: 0.2, expected: [SAT]}
+    scaled_version: "rate x4; near_hopf sigma / 2; other relative amplitudes unchanged"
+    min_expected_share: 0.95
+
+loop:
+  helper: {model: qwen3-32b-awq, kv_cache_dtype: fp8, max_tokens: from_truncation_preflight, enable_log_requests: true}
+  device_models: loop_devices
+  n_devices: 32
+  warmup_s: 300
+  measure_s: 1200
+  deadline_s: 120
+  window_s: 15
+  reachable: {kappa: [0.0025, 0.005, 0.01, 0.02, 0.04], broadcast_period_s: [2, 5, 10], exclude_if_predicted_mean_count_per_10s_below: 10}
+  distance: "predicted tuples L_0..L_16 on the line after the approximation mask (each tuple with IND is its own label); change points c where L_c != L_(c+1); d(j) = min_c (c - j + 1 if j <= c else j - c); if no change point, d(j) = min(j, 16 - j) + 1"
+  conditions:
+    feasibility: "per loop model, 3 points from the eligible set (reachable, predicted tuple has no IND): labels by priority STB > OSC > SAT > OSC+SAT; take the first three labels present, each at its largest distance; if fewer than three labels are present, fill from the not yet selected eligible points by decreasing distance; if fewer than 3 eligible points, K3 is inconclusive and treated as fail"
+    paired: "among points where both models have non-IND predictions in both dimensions and differ in at least one dimension, maximise min(distance_1.7B, distance_4B)"
+    tie_break: [smaller_rho, smaller_kappa, shorter_broadcast_period]
+  connection_pool: unlimited                   # httpx limits must be set explicitly
+  max_decision_latency_p95_s: 0.5
+  max_send_gap_p99_ms: 50
+  interference_check:
+    poll_every_s: 1
+    window_s: 30
+    expected_itl: "sum_t c(t) ITL_W3(m(t)) / sum_t c(t), c(t) = per-second increment of the ITL histogram count; m(t) = running gauge, previous second's value if 0 while c(t) > 0"
+    observed_itl: histogram_sum_increment_over_count_increment
+    bad_window_if: ["deviation > 0.20", "preemption counter increased"]
+    skip_window_if: ["count increment == 0"]
+    invalid_window_if: ["missing polls > 5% of seconds"]
+    run_invalid_if: ["valid windows < 50% (monitoring insufficient)", "bad windows > 10% of valid windows", "any counter reset"]
+    prerequisite: "after W3 and before W11: on W3 data the expected and observed ITL agree within 5%; otherwise report only (preemption, reset and monitoring rules still apply)"
+  max_helper_error_rate: 0.01
+  follow_up_after_measure: until_done_or_deadline
+  timestamps: {client: [arrival, decision_sent, decision_returned, helper_sent, helper_done, cancel_sent], server: [received_from_request_log_if_available]}
+  timing: {preferred_max_load: 30, client_cpu_cores: 8, record_load: true}
+  arrival_seeds: [42, 43, 44, 45, 46, 47, 48, 49]
+  run_order_seed: 1729
+
+gates:
+  K0: {digit_mass_gate: 0.5, min_gate_pass_rate: 0.99, min_kept_paraphrases: 1, max_nonmonotone_item_share: 0.20, hf_cross_check: required}
+  K1: {min_models: 2, ci: 0.95, require: ["bz < 0", "theta_w > 0", "no severe misfit"]}
+  K2:
+    i: "some reachable fine-grid point where the two loop models have non-IND predicted labels in both dimensions and differ in at least one dimension"
+    ii: {per_dimension: true, min_evaluable_share: 0.70, min_agreement: 0.85, inconclusive_if_coverage_below: true}
+  K3: {min_correct: 5, of: 6, ind_and_sat_ind_count_as_mismatch: true, role: development_feasibility, eligible: "reachable points whose predicted tuple has no IND", fewer_than_3_eligible_for_a_model: inconclusive_treated_as_fail}
+  E3: {STB: [STB], OSC: [OSC, OSC+SAT], SAT: [SAT, OSC+SAT, SAT/IND]}
+  EP: {eligibility: same_as_K2_i, orders: {osc: "NOOSC < OSC", sat: "NOSAT < SAT"}, rule: "differences in the same direction where predicted labels differ, equality where they agree", osc_ind_observed: undecidable, untestable_if_no_condition: true}
+  K4: steering.gate
+  decision_order: [K0, K1, "K2 and K3", "E3, EP, K4 as combinable modifiers"]
+
+w1c_ladder:
+  test_matrix:
+    demand: "0.6 * sigmoid((0.3 - w) / s), s in {0.03, 0.06, 0.12}"
+    rho: fine_grid_17
+    kappa: [0.005, 0.01, 0.02]
+    broadcast_period_s: [2, 5, 10]             # levels 5-6 only; levels 1-4 have no discrete broadcast
+    points_per_level: [153, 153, 153, 153, 459, 459]
+    service_curve: "v(m) = 60 / (1 + 0.02 (m - 1)) tokens/s, M = 32"
+    fixed_service_tokens: 300
+    per_item_service: {dist: lognormal, median_tokens: 300, sigma_log: 0.5}
+    decision_latency: {dist: gamma, mean_s: 0.2, shape: 2}
+    seeds_per_point: 5
+    seed_cell: ladder
+  runs: {per_level: [765, 765, 765, 765, 2295, 2295], total: 7650, scale_checks_max: 7650, reuse_across_levels: none, fluid_only_recompute: [fluid_model_fix, atom_escalation], des_rerun: whole_affected_level_if_des_code_changes}
+  run_cap: 20000                               # incl. scale checks and reruns; stop and report if reached
+  comparison: same_as_K2_ii_pointwise           # per level, equal weight over that level's own points
+  levels: [fixed_service_no_cancel_fresh_continuous, per_item_service, cancellation, window_signal, discrete_broadcast, decision_latency]
+  level1_min_pointwise_agreement: 0.95         # required for level 1
+  later_levels_min_pointwise_agreement: 0.85   # target for the later levels; if still below, document the approximation error
+  cancellation_timeout_rate:
+    des_point_estimate: "pooled over the 5 scale-1 seeds: sum of timeouts / sum of asks (classifier sample); undefined if the sum of asks is 0"
+    fluid_point_estimate: "cancelled ask mass / ask mass for arrivals in the measurement window; undefined if the ask mass is 0"
+    set: "points where both are defined and max(fluid, des) >= 0.01"
+    metric: "arithmetic mean over the set of |fluid - des|"
+    max_pp: 2
+    empty_set: "level 3 empty: decide at level 6 with the same estimator and threshold; both empty: not testable, no escalation, reported"
+    escalate_atoms_to: 256                     # recompute the fluid model only, same estimator; formal-grid predictions then use 256 atoms
+    still_above: "formal-grid points with predicted timeout rate in [5%, 20%] get SAT-dimension IND (not evaluable: in the coverage denominator, not the numerator, not in agreement)"
+
+seed_namespace:
+  key: "SeedSequence([stage_id, cell_id, rep, 0xA0])"   # 4 words; full keys must be unique
+  stages: {des: 1, loop_arrivals: 2, steering_random: 3, development_and_validation: 9}
+  cells_stage_9: {development_pilot: 1, hf_cross_check: 2, regime_validation: 3, k4_bootstrap: 4, psychometric_bootstrap: 5, ladder: 6, gate_decidability: 7, hf_noise_calibration: 8}   # 7: decidability check of the steering gate; 8: noise calibration of the HF cross-check (key (9, 8, 9001, 0xA0))
+  des: [42, 43, 44, 45, 46]
+  loop_arrivals: [42, 43, 44, 45, 46, 47, 48, 49]
+  steering_random_directions: [9101, 9120]
+  development_pilot: [9001, 9006]
+  run_order: 1729
+
+gpu_budget_hours: 40   # ceiling of GPU use over all confirmatory batches (stop and report when it is exceeded); the schema requires the key, no entry reads it

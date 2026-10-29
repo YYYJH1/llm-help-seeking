@@ -1,0 +1,9 @@
+variant,code_name,uses_main_task_scoring_rules,prompt_content,baseline_asks_when_confidence_below
+deduct_consultation,M1,no,"x points are deducted for every consultation, whether or not the expert is correct",0.8 - x
+deduct_consultation_waiting_wording,M1w,no,"The same deduction, described as the cost of waiting for the expert's reply",0.8 - x
+deduct_independent_answer,M2,no,"x points are deducted for every independent answer, whether or not it is correct",0.8 + x
+deduct_incorrect_independent_answer,M3,no,"x points are deducted only for an incorrect independent answer",(0.8 + x) / (1 + x)
+wait_no_deduction,M0,no,"No points are deducted. The expert's reply arrives after D = 100 x seconds, which is stated not to affect the score",0.8
+no_deduction_no_wait,M0n,no,"No points are deducted and waiting is not mentioned (a single condition without cost level)",0.8
+expected_score_stated,F3,yes,"The expected net score of consulting, 0.80 - 0.00 - x, is stated together with the fixed fee 0 and the waiting cost x, and that these costs do not depend on the question or the expert",0.8 - x
+goal_reminder,OBJ,yes,"The main-task prompt with fixed fee 0 and waiting cost x followed by an instruction to maximize the expected score",0.8 - x

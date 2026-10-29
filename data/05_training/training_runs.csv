@@ -1,0 +1,30 @@
+model,objective,column_tag,seed,learning_rate,kl_weight,steps,paired_base
+qwen3-4b,CAPT,capt_s0,0,0.0001,0.1,1000,base
+qwen3-4b,CAPT,capt_s1,1,0.0001,0.1,1000,base
+qwen3-4b,CAPT,capt_s2,2,0.0001,0.1,1000,base
+qwen3-4b,SFT,sft_s0,0,0.0001,1.0,1000,base
+qwen3-4b,SFT,sft_s1,1,0.0001,1.0,1000,base
+qwen3-4b,SFT,sft_s2,2,0.0001,1.0,1000,base
+qwen3-4b,fixed-cost control,fixedcost_s0,0,0.0001,0.1,1000,base
+qwen3-4b,rotated-terms control,rotated_s0,0,0.0001,0.1,1000,base
+qwen3-4b,soft-target,softtarget_s0,0,0.0002,0.1,1000,base
+qwen3-4b,soft-target,softtarget_s1,1,0.0002,0.1,1000,base
+qwen3-4b,soft-target,softtarget_s2,2,0.0002,0.1,1000,base
+gemma-4-e4b-it,CAPT,capt_s0,0,0.0001,0.1,1000,base
+gemma-4-e4b-it,CAPT,capt_s1,1,0.0001,0.1,1000,base
+gemma-4-e4b-it,CAPT,capt_s2,2,0.0001,0.1,1000,base
+gemma-4-e4b-it,SFT,sft_s0,0,0.0001,0.1,500,base
+gemma-4-e4b-it,SFT,sft_s1,1,0.0001,0.1,500,base
+gemma-4-e4b-it,SFT,sft_s2,2,0.0001,0.1,500,base
+gemma-4-e4b-it,soft-target,softtarget_s0,0,0.0001,1.0,1000,base
+gemma-4-e4b-it,soft-target,softtarget_s1,1,0.0001,1.0,1000,base
+gemma-4-e4b-it,soft-target,softtarget_s2,2,0.0001,1.0,1000,base
+smollm3-3b,CAPT,capt_s0,0,0.0001,0.1,250,base
+smollm3-3b,CAPT,capt_s1,1,0.0001,0.1,250,base
+smollm3-3b,CAPT,capt_s2,2,0.0001,0.1,250,base
+smollm3-3b,soft-target,softtarget_s0,0,0.0001,0.1,500,base
+smollm3-3b,soft-target,softtarget_s1,1,0.0001,0.1,500,base
+smollm3-3b,soft-target,softtarget_s2,2,0.0001,0.1,500,base
+smollm3-3b,SFT,sft_s0,0,0.0001,0.1,1000,base_sft
+smollm3-3b,SFT,sft_s1,1,0.0001,0.1,1000,base_sft
+smollm3-3b,SFT,sft_s2,2,0.0001,0.1,1000,base_sft

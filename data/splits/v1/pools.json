@@ -1,0 +1,75 @@
+{
+ "derived": {
+  "mmlu_redux_eval_shuffled": {
+   "arrangement_seed": 1042,
+   "same_keys_as": "mmlu_redux_eval"
+  }
+ },
+ "format": 1,
+ "item_key_rule": "sha256(normalize(question) + '|' + normalize(correct_answer_text))",
+ "normalize_rule": "NFKC, lowercase, collapse whitespace, strip trailing period",
+ "pools": {
+  "mmlu_redux_cal": {
+   "bank": "mmlu_redux",
+   "file": "keys/mmlu_redux_cal.keys",
+   "md5": "d137f2b9152aab603b8e77b3c323aa1c",
+   "n": 1000,
+   "sha256": "ff9fa6bc35914ce5f1fdb5b817eeb8bd23036a79299972dbc5a3b76f5ab3b12e"
+  },
+  "mmlu_redux_eval": {
+   "bank": "mmlu_redux",
+   "file": "keys/mmlu_redux_eval.keys",
+   "md5": "67732aad5404923f410cb9b3347e6fb4",
+   "n": 2000,
+   "sha256": "b4d3ef8356c2f6b1832ceaa4b7ca3f34887f99e80c321b40842a7acb952318e7"
+  },
+  "mmlu_redux_holdout": {
+   "bank": "mmlu_redux",
+   "file": "keys/mmlu_redux_holdout.keys",
+   "md5": "f24dc9383f8fe96c5d5bb1521667c02b",
+   "n": 2291,
+   "sha256": "e78d6e10c4f9c0ab68dce783b36522b0bc8c8873b7fec808a761bc41363e2439"
+  },
+  "simpleqa_mc_cal": {
+   "bank": "simpleqa_mc",
+   "file": "keys/simpleqa_mc_cal.keys",
+   "md5": "d02999d3874ac7d07d74e2bb79ac8b22",
+   "n": 1000,
+   "sha256": "baa41aa8c0d9f0c8cd0d5d6bdd6c91ac876e3619c6d5f9d32f42ed51eefb45c1"
+  },
+  "simpleqa_mc_eval": {
+   "bank": "simpleqa_mc",
+   "file": "keys/simpleqa_mc_eval.keys",
+   "md5": "7cdadd64fd1667517b6ed24cf8a720b6",
+   "n": 1000,
+   "sha256": "7cfe61e7743e4621083386ec98e165f105e860adbea904d056887a11db3caa15"
+  },
+  "simpleqa_mc_holdout": {
+   "bank": "simpleqa_mc",
+   "file": "keys/simpleqa_mc_holdout.keys",
+   "md5": "4d9360cfbf097667b683f86ce1afdbfc",
+   "n": 2326,
+   "sha256": "9e5bd5e8e59dc2f920da67e000dd98241f4f8325d819ef5af6ddd820480538e6"
+  }
+ },
+ "selection": {
+  "mmlu_redux": {
+   "calibration_n": 1000,
+   "evaluation_n": 2000,
+   "keep_error_types": [
+    "ok"
+   ],
+   "pool_order": "subject name ascending, source row ascending",
+   "rule": "per subject: quota floor(K*n_s/N), rounding shortfall +1 in subject-name order; within a subject the first quota items by sha256('<seed>|<stage>|<key>') ascending",
+   "seed": 42,
+   "stratify_by": "subject"
+  },
+  "simpleqa_mc": {
+   "arrangement_seed": 1042,
+   "calibration": "phase0_questions.csv",
+   "evaluation": "phase1_questions.csv",
+   "holdout": "simpleQA_4MCQ_dataset.csv minus the keys of the two phase files"
+  }
+ },
+ "version": "v1"
+}

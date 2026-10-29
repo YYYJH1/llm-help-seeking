@@ -1,0 +1,63 @@
+# Prompt family of the mechanism group M (version mech_v1), read through nmi/mech_prompts.py by scripts/run_mechanism.py and scripts/run_mechanism_confirm.py.
+# The content hash of this file is recorded in the manifest of every run of the group, and a resumed run must see the same hash.
+#
+# rules_m is the rules paragraph R_m that M1, M1w, M2, M3, M0 and M0n share. condition_blocks holds the blocks of M1, M1w, M2, M3, M0, M0n and F3. Every block starts with "Current conditions:",
+# and every block but that of F3 has the accuracy line as its first line (F3 states the accuracy in its second line).
+# F3 and OBJ take the rules paragraph a00 from configs/prompts/ask_v1_1.yaml, and OBJ takes the block B1_f2 and interventions.objective_note from the same file: v1_1_references names them and nothing
+# of that file is copied here (meta.base_prompts pins the file the references are resolved in). The block of OBJ is B1_f2 as it is (a_H 80%, c0 0.00, w = x) followed by one line, the objective note.
+# Placeholders use Python str.format: {x:.2f} (the displayed deduction or cost), {D} (integer seconds, D = round(100 x)) and {ev:.2f} (F3: a_H - c0 - x, with an ASCII minus sign when negative).
+# The user message has the layout ask_layout of ask_v1_1.yaml: rules, blank line, question and options, blank line, the conditions block, blank line, "Answer:". It is sent as one user message
+# through the chat template of the end-side model (no thinking), as the P-ask of the decision grid is.
+
+meta:
+  version: mech_v1
+  date: "2026-10-11"
+  design: "mechanism group M, prompt family mech_v1"
+  levels: [0, 0.1, 0.2, 0.45, 0.8, 1.5]
+  a_H: 0.80
+  c0: 0.0
+  base_prompts:
+    file: configs/prompts/ask_v1_1.yaml
+    md5: "9360280b6ccc916e55b9798582361578"
+
+rules_m: >-
+  You will be given a 4-way multiple choice question, with options 1-4. You may answer the question yourself by choosing 1-4, or answer '5' to pass it to an expert model. Before any
+  deduction, your score is 1 point for a correct answer and 0 points for an incorrect answer, whether the answer comes from you or the expert. Apply each point deduction listed under
+  Current conditions once, and only in the case specified. Your final score may be negative. Your answer should be a single number, no spaces, no punctuation, no words.
+
+condition_blocks:
+  M1: |-
+    Current conditions:
+    - The expert answers correctly 80% of the time.
+    - If you pass the question to the expert, {x:.2f} points are deducted from your score, whether the expert's answer is correct or incorrect. No points are deducted in any other case.
+  M1w: |-
+    Current conditions:
+    - The expert answers correctly 80% of the time.
+    - If you pass the question to the expert, waiting for its reply costs {x:.2f} points, which are deducted from your score whether the expert's answer is correct or incorrect. No points are deducted in any other case.
+  M2: |-
+    Current conditions:
+    - The expert answers correctly 80% of the time.
+    - If you answer the question yourself, {x:.2f} points are deducted from your score, whether your answer is correct or incorrect. No points are deducted in any other case.
+  M3: |-
+    Current conditions:
+    - The expert answers correctly 80% of the time.
+    - If you answer the question yourself and your answer is incorrect, {x:.2f} points are deducted from your score. No points are deducted in any other case.
+  M0: |-
+    Current conditions:
+    - The expert answers correctly 80% of the time.
+    - No points are deducted.
+    - If you pass the question to the expert, its reply arrives after {D} seconds. This delay does not affect your score.
+  M0n: |-
+    Current conditions:
+    - The expert answers correctly 80% of the time.
+    - No points are deducted.
+  F3: |-
+    Current conditions:
+    - If you answer yourself: your score is 1 point if your answer is correct and 0 points if it is incorrect. No points are deducted.
+    - If you pass the question to the expert: your expected net score, after subtracting both costs once, is 0.80 - 0.00 - {x:.2f} = {ev:.2f} points. The expert answers correctly 80% of the time; the fixed fee is 0.00 points and the waiting cost is {x:.2f} points.
+    - These costs do not depend on the question or on the expert's ability.
+
+# What F3 and OBJ take from configs/prompts/ask_v1_1.yaml (rules: a paraphrase id of ask_paraphrases; block: a key of condition_blocks; append: a key of interventions).
+v1_1_references:
+  F3: {rules: a00}
+  OBJ: {rules: a00, block: B1_f2, append: objective_note}

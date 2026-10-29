@@ -1,0 +1,19 @@
+# Third-party packages imported by nmi/, scripts/ and the recomputation scripts in data/.
+# Versions are those installed in the environment that produced the results (Python 3.12.14).
+
+# Statistics and tables (numpy, scipy, pandas and pyarrow are all that the recomputation scripts in data/ need)
+numpy==2.3.5
+scipy==1.18.1
+pandas==3.0.6
+pyarrow==25.0.1
+PyYAML==6.0.3
+
+# API-served models
+httpx==0.28.1
+
+# Local models and activation patching (GPU; the experiments used the CUDA 13.0 build of torch, 2.13.0+cu130)
+torch==2.13.0
+transformers==5.17.0
+peft==0.21.0
+safetensors==0.8.0
+vllm==0.30.0

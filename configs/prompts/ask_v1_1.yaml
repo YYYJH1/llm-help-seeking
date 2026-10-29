@@ -1,0 +1,183 @@
+# Prompt family (version 1.1) of the kill test and the API experiment: the answer prompt, the helper prompt, ten paraphrases of the rules with their condition blocks, and the
+# intervention wording. The stated expert accuracy is the pool-level estimate of the helper's CoT accuracy; the prompt does not mention the deadline, so the rationality
+# ratio R is defined relative to the stated information. Placeholders use Python str.format: {question}, {o1}..{o4}, {a_H_pct}, {c0:.2f}, {w:.2f}, {D_hat_s}, {kappa:.2f}.
+# The whole prompt is sent as one user message through each model's chat template (Qwen3: enable_thinking=False). The decision is read from the next token over "1".."5".
+
+answer_kumaran:
+  # Verbatim Kumaran et al. 2026 Phase 0/1 prompt (OSF resw4 notebook, cell 13, run_phase).
+  template: |-
+    You will be given a 4-way multiple choice question, with options 1-4. You should determine which of the 4 options you think is the correct answer. Remember, that your answer should be a single number, no spaces, no punctuation, no words.
+
+    Question: {question}
+
+    1) {o1}
+    2) {o2}
+    3) {o3}
+    4) {o4}
+
+    Answer:
+  # Fixed ASCII text appended to the rendered chat text right after the start of the assistant turn (after the
+  # chat template and its non-thinking parameters), with no newline and no end marker. The digit is read at the
+  # position after it. It is used for the end-side models' P-answer only (every P-answer path); the helper's
+  # direct answer does not use it. The last character is U+0020.
+  assistant_prefix: "Answer: "
+
+helper_cot:
+  # Helper (expert) prompt in the outcome tables, the service calibration and the
+  # real loop. Non-thinking mode, greedy; max_tokens is 512 or 1024 as chosen by the truncation
+  # preflight (readout.helper_cot of the kill-test configuration). The last "Answer: N" match is the
+  # answer; a reply without a match (e.g. truncated) counts as wrong.
+  template: |-
+    Answer the following multiple choice question. Think it through briefly, then write your final answer on the last line in the form "Answer: N", where N is 1, 2, 3 or 4.
+
+    Question: {question}
+
+    1) {o1}
+    2) {o2}
+    3) {o3}
+    4) {o4}
+
+ask_layout: |-
+  {rules}
+
+  Question: {question}
+
+  1) {o1}
+  2) {o2}
+  3) {o3}
+  4) {o4}
+
+  {conditions}
+
+  Answer:
+
+condition_blocks:
+  B1_f2: |-
+    Current conditions:
+    - The expert answers correctly {a_H_pct}% of the time.
+    - Using the expert costs a fixed fee of {c0:.2f} points.
+    - Waiting for the expert's reply currently costs about {w:.2f} points.
+  B2_f2: |-
+    Current conditions:
+    Expert accuracy: {a_H_pct}%
+    Fixed fee for using the expert: {c0:.2f} points
+    Expected waiting cost: {w:.2f} points
+  B1_f1: |-
+    Current conditions:
+    - The expert answers correctly {a_H_pct}% of the time.
+    - Using the expert costs a fixed fee of {c0:.2f} points.
+    - The expert's reply currently takes about {D_hat_s} seconds, and each second of waiting costs {kappa:.2f} points.
+  B2_f1: |-
+    Current conditions:
+    Expert accuracy: {a_H_pct}%
+    Fixed fee for using the expert: {c0:.2f} points
+    Expected waiting time: {D_hat_s} seconds
+    Waiting cost per second: {kappa:.2f} points
+
+# Ten paraphrases of the rules. Each states the same four facts: options 1-4; 1 point for a
+# correct answer and 0 for a wrong one; '5' hands the question to the expert, whose answer is
+# scored the same way minus the listed costs; reply with a single number. None mentions other
+# devices or congestion externalities (that wording is an intervention, see `interventions` below).
+ask_paraphrases:
+  a00:
+    block: B1
+    rules: >-
+      You will be given a 4-way multiple choice question, with options 1-4. You score 1 point
+      if your answer is correct and 0 points if it is wrong. Instead of answering yourself, you
+      may answer '5' to pass the question to an expert model. If you pass, you score 1 point if
+      the expert's answer is correct and 0 points if it is wrong, minus the costs listed under
+      Current conditions. Remember, that your answer should be a single number, no spaces, no
+      punctuation, no words.
+  a01:
+    block: B2
+    rules: >-
+      Below is a multiple-choice question with four options numbered 1-4. Scoring: 1 point for a
+      correct answer, 0 points for an incorrect one. You may instead reply '5' to hand the
+      question to an expert model. The expert's answer is then scored the same way, and the
+      costs listed under Current conditions are subtracted. Reply with a single number only
+      (1, 2, 3, 4 or 5).
+  a02:
+    block: B1
+    rules: >-
+      Choose the correct option (1-4) for the question below, or reply '5' to let an expert
+      model answer it instead. A correct final answer is worth 1 point and a wrong one 0 points,
+      whether it comes from you or from the expert. Using the expert has the costs listed under
+      Current conditions. Your reply must be one number with no other text.
+  a03:
+    block: B2
+    rules: >-
+      You will see a question with four answer options (1-4). If you answer it yourself, you
+      earn 1 point when you are correct and nothing when you are wrong. If you reply '5', the
+      question is sent to an expert model. You then earn 1 point if the expert is correct and
+      nothing otherwise, and you pay the costs listed under Current conditions. Respond with
+      exactly one number.
+  a04:
+    block: B1
+    rules: >-
+      Task: answer a 4-option multiple-choice question. Payoff: 1 point for a correct answer, 0
+      for an incorrect one. The extra option '5' delegates the question to an expert model,
+      whose answer earns points in the same way. Delegating incurs the costs listed under
+      Current conditions. Output only the number of your choice (1-5).
+  a05:
+    block: B2
+    rules: >-
+      Here is a multiple-choice question with options 1-4. You can answer it yourself, or answer
+      '5' to consult an expert model and submit its answer instead. A correct submitted answer is
+      worth 1 point and a wrong one 0 points. Consulting the expert costs the amounts listed
+      under Current conditions, which are subtracted from your points. Give a single number and
+      nothing else.
+  a06:
+    block: B1
+    rules: >-
+      Answer the following question by giving the number of the correct option (1-4). You may
+      also give '5', which passes the question to an expert model. A correct answer scores 1
+      point and a wrong answer 0 points. If you pass, the expert's answer is scored and the costs
+      listed under Current conditions are deducted. Your reply must be a single digit.
+  a07:
+    block: B2
+    rules: >-
+      Multiple-choice question below (options 1-4). Reply with the number of the option you
+      believe is correct, or reply '5' to let an expert model answer for you. Scoring is 1 point
+      for a correct answer and 0 points for an incorrect one, for your answers and the expert's
+      alike. Letting the expert answer has the costs listed under Current conditions. Use a
+      single number only, no words.
+  a08:
+    block: B1
+    # The sentence "Your goal is to maximise your expected points." is left out because it
+    # adds an objective the other paraphrases do not state; it is available as interventions.objective_note.
+    rules: >-
+      Read the question and the four options (1-4). A correct answer gives 1 point and an
+      incorrect answer gives 0 points. Reply '5' if you would rather have an expert model answer.
+      You then receive the expert's points minus the costs listed under Current conditions. Reply
+      with one number only.
+  a09:
+    block: B2
+    rules: >-
+      For the question below, output the number (1-4) of the correct option. If you prefer not
+      to answer, output '5' to defer to an expert model. You earn 1 point for each correct answer
+      and 0 for each wrong one. Deferring earns the expert's result minus the costs listed under
+      Current conditions. Only output a single number.
+
+# Intervention wording (optional additions to the prompt; not used in the kill test).
+interventions:
+  externality_note: >-
+    Note: many other devices share this expert. Every question passed to the expert makes
+    everyone's wait longer.
+  objective_note: >-
+    Your goal is to maximise your expected points.
+
+# Exploratory check (calibration split, primary paraphrase only): the same prompt with the
+# Current conditions block placed between the rules and the question.
+block_position_variant_layout: |-
+  {rules}
+
+  {conditions}
+
+  Question: {question}
+
+  1) {o1}
+  2) {o2}
+  3) {o3}
+  4) {o4}
+
+  Answer:

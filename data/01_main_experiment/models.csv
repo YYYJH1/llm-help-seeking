@@ -1,0 +1,8 @@
+model,display_name,developer,precision,calibration_temperature,n_questions
+qwen3-1.7b,Qwen3-1.7B,Alibaba,bf16,9.23955909971,2291
+qwen3-4b,Qwen3-4B,Alibaba,bf16,5.59047073304,2291
+qwen3-14b,Qwen3-14B,Alibaba,fp8 (online quantization),4.71709285336,2291
+qwen3-32b,Qwen3-32B,Alibaba,awq (4-bit weights),2.35670065268,2291
+qwen2.5-7b-instruct,Qwen2.5-7B-Instruct,Alibaba,bf16,4.35132796758,2291
+gemma-4-e4b-it,Gemma-4-E4B-it,Google,bf16,2.87625106221,2291
+smollm3-3b,SmolLM3-3B,Hugging Face,bf16,2.77010084323,2291

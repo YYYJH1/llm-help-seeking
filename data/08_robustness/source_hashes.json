@@ -1,0 +1,103 @@
+{
+  "original_scoring_files": [
+    {
+      "alias": "expert__qwen3-32b-awq",
+      "path": "results/scenario/20261012_064513_s1seal_expert_qwen3-32b-awq/expert.parquet",
+      "bytes": 79961,
+      "md5": "07e109e8e707004afc345dab75c13c7d",
+      "sha256": "5cce862e1794d2bc8f1a01eab70b79085eae950747563eebf768f8830d647515",
+      "rows": 2000
+    },
+    {
+      "alias": "answer__gemma-4-e4b-it",
+      "path": "results/scenario/20261012_065739_s1seal_answer_gemma-4-e4b-it/answer.parquet",
+      "bytes": 226604,
+      "md5": "e8637bda2d8093b7d4ec0e0d2acabe56",
+      "sha256": "7e4f721ef1dc3bdd1a6e6b6233dca749664a21450cb6cfbfbf922afc8930339a",
+      "rows": 2000
+    },
+    {
+      "alias": "answer__olmo-3-7b-instruct",
+      "path": "results/scenario/20261012_070849_s1seal_answer_olmo-3-7b-instruct/answer.parquet",
+      "bytes": 246727,
+      "md5": "f3017dce7f0567092a6b4c90126744ae",
+      "sha256": "9e4c60603dbe440176e2355dc6dbeb14fffc50f631e6bd4770c5ef70feb7e194",
+      "rows": 2000
+    },
+    {
+      "alias": "answer__phi-4-mini-instruct",
+      "path": "results/scenario/20261012_065935_s1seal_answer_phi-4-mini-instruct/answer.parquet",
+      "bytes": 243369,
+      "md5": "9ac2a3ab47526b0cffd7c353df4293ab",
+      "sha256": "9d06ec4b4c5d88037252474d5a150a8bf8ef42caa8700bde29d39a666269e187",
+      "rows": 2000
+    },
+    {
+      "alias": "answer__qwen2p5-7b-instruct",
+      "path": "results/scenario/20261012_065339_s1seal_answer_qwen2.5-7b-instruct/answer.parquet",
+      "bytes": 160543,
+      "md5": "3ef7dd2429585b5aa014297c763e65f3",
+      "sha256": "3175be0a481eaea6b8cc5574958e7be8b66c20e7735bf243218c9150a41144f6",
+      "rows": 2000
+    },
+    {
+      "alias": "answer__qwen3-1p7b",
+      "path": "results/scenario/20261012_064753_s1seal_answer_qwen3-1.7b/answer.parquet",
+      "bytes": 237953,
+      "md5": "e2519b5c97c4387e5e2759722150dbcb",
+      "sha256": "7580c5d28154aee69f2a214630222e8b363736b9597b7eb2db554a4a4539bee5",
+      "rows": 2000
+    },
+    {
+      "alias": "answer__qwen3-14b",
+      "path": "results/scenario/20261012_064512_s1seal_answer_qwen3-14b/answer.parquet",
+      "bytes": 179673,
+      "md5": "47a9959d65a3cb759082510bcc839d5c",
+      "sha256": "9f120dc352936bbdd4c76430014e3d07af2124479a3a2e57782173bb3a0254cc",
+      "rows": 2000
+    },
+    {
+      "alias": "answer__qwen3-4b",
+      "path": "results/scenario/20261012_065201_s1seal_answer_qwen3-4b/answer.parquet",
+      "bytes": 211307,
+      "md5": "77f0e0a7a0cc1115fdf4316fc85448d7",
+      "sha256": "9eb4e124a3720a71382c9a78d5527761bf945ad44104ad3f23e8c8ec83e5becc",
+      "rows": 2000
+    },
+    {
+      "alias": "answer__smollm3-3b",
+      "path": "results/scenario/20261012_070726_s1seal_answer_smollm3-3b/answer.parquet",
+      "bytes": 240899,
+      "md5": "091fd79486e914c0c7f2819e24dabb75",
+      "sha256": "74fd2aedd0560748fef5f7cc330055466250f0b8fc878c5397446e6086f7ff10",
+      "rows": 2000
+    }
+  ],
+  "archived_summaries": [
+    {
+      "remote": "results/scensum/20261012_085406_scensum_cf/scenario_analysis.json",
+      "local": "scenario_confirm.json",
+      "bytes": 3028925,
+      "sha256": "b375054c2bc1e5406cb067663404f44eb5e0edcd23757dbaea9d8387babc17b0"
+    },
+    {
+      "remote": "results/scensum/20261012_085406_scensum_cf/derived_inputs.json",
+      "local": "scenario_inputs.json",
+      "bytes": 16220,
+      "sha256": "0d67bb3ba3791f1ba53479ec597e5c03e33cb70a2fbd907926cae06fc7909303"
+    },
+    {
+      "remote": "results/fig3_readout_repair_20261024/fig6_inclusive/summary.json",
+      "local": "routing_inclusive.json",
+      "bytes": 49386,
+      "sha256": "54a7ea0f0443998c4e3d28901c293975c289376019c04e2f205c808b14990c47"
+    },
+    {
+      "remote": "results/part3_offline_20261019/a3/summary.json",
+      "local": "routing_legacy.json",
+      "bytes": 1353506,
+      "sha256": "c891c77804d963e7589c4b87200725b37bc47338e44147b807923ee12147ab5c"
+    }
+  ],
+  "note": "Scoring files matched both their original derived-input MD5 and the SHA-256 recorded by the current Figure 6 analysis. Only correctness flags, confidence and hashed question identifiers are exported."
+}

@@ -1,0 +1,160 @@
+# Configuration of the closed-model API experiment (version api_exp_v1).
+# Read by nmi/api_exp/ and used by scripts/run_api_decisions.py. The unit prices are kept apart in configs/api_exp_prices.yaml.
+# A real run (not --dry-run) states the expected hashes of this file and of the protocol file on its command line, and the manifest of the run records both.
+#
+# Hashing: the block `runtime` (requests in flight) and the prices (configs/api_exp_prices.yaml) may change between sessions and are in neither hash. The hash of this file WITHOUT `runtime`
+# (the "frozen hash") is written into the manifest of a run, and a resumed run must have the same one. Unknown keys and repeated keys are errors.
+#
+# Output locations are not configurable. The runs are under results/api_exp/; the total ledger, the index of successes, the budget state, the freeze record and the process lock are under
+# results/api_exp/_state/ (block `state`): one fixed absolute location for every working tree. A real run is refused (exit 2) unless the code it is running is the repository at
+# `state.code_root`; a copy of the repository elsewhere can run the tests and --dry-run only. No option and no environment variable moves these locations, and the loader refuses any other value of `state`.
+#
+# The configuration is frozen at the FIRST real send: a record in the state directory keeps the hash of the protocol file, of this file without `runtime`, of the prompt file, of the
+# local configuration, of the split, of all rendered messages of the pilot pool and of the sources that build the request and read the reply. Every later session, for any model,
+# must find the same values or it ends with exit 2; writing another configuration file does not start a new model.
+#
+# Conventions used by the code:
+#   * "at most 8 times" is read as 8 SENDS in all, counted over every session of a request (the first send and seven retries);
+#   * enable_thinking is a top-level field of the JSON body (what the OpenAI SDK sends for extra_body);
+#   * reasoning tokens are part of usage.completion_tokens and are billed at the output price.
+
+version: api_exp_v1
+
+protocol:
+  file: protocol/api_experiment.md
+
+endpoint:
+  url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions   # Bailian, Beijing region, OpenAI-compatible chat completions
+  key_file: /path/to/secrets/dashscope.key                                 # read inside the process at run time only; never printed, logged or written
+
+# The data settings (item sources, the displayed-w rule, the split) are those of the local development configuration; the user message comes from the same prompt code.
+local:
+  config: configs/v6_confirm.yaml
+  split_dir: data/splits/v1
+
+# One user message, character for character the local ask prompt: the rule section a00, the question, the four options, the condition block B1_f2 and the last line
+# "Answer:". No system message and no assistant prefix. `block` is checked against the prompt file (a00 is a B1 paraphrase).
+prompt:
+  file: configs/prompts/ask_v1_1.yaml
+  paraphrase: a00
+  block: B1
+  framing: f2
+  layout: standard
+
+# Every model is asked with thinking switched off: enable_thinking false and max_tokens 4. The request parameters sit in one class, `thinking_off`, which each model names
+# (the request code looks them up by model). Probabilities are not requested (no logprobs field).
+request:
+  temperature: 0
+  classes:
+    thinking_off:
+      max_tokens: 4
+      extra_body: {enable_thinking: false}
+
+# The reading rule. The reply is stripped at both ends; a first character 1 to 4 is an answer, 5 is a request for help, anything else (and an empty reply) is a format
+# failure. The rule is in nmi/api_exp/reader.py; it is written here so that it is part of the frozen hash, and the loader refuses a value that differs from the code.
+reading:
+  strip: both
+  answer_digits: "1234"
+  ask_digit: "5"
+
+# The run order is the order of this list. A run with --model naming some models runs those, in this order; the others are neither started nor recorded as skipped. `aliases` (optional) are the
+# other names under which the service may return a model: the model field of a response is stored as it came only if it is the id or one of these, otherwise as a fixed word and its sha256.
+# The default is the id only.
+models:
+  - {id: deepseek-v4.1-flash, class: thinking_off}
+  - {id: qwen3.5-plus-2026-04-20, class: thinking_off}
+
+# The transport. A request (model, question, condition) is SENT at most `max_attempts` times in all, over every session: the count is the number of attempt records
+# in the ledger; the loader refuses more than 8. Only transport errors (and a 2xx reply that is not a JSON object), HTTP 429 and HTTP 5xx are sent again, with exponential backoff; any
+# other 4xx status, and the eighth failed send, end the request for good (an ordinary resume does not send it again). A send whose result was never written (the process died) is
+# uncertain; after the eighth send it is the final state "uncertain and sends used up" and is not sent again, not even with --resend-uncertain. A reply whose content is unusable is never
+# sent again. A status in `abort_statuses` (the key or the account is refused) stops the whole run: it is not a property of one request, so it counts as a send but does not end the request.
+# `stop_after_consecutive_exhausted` is an implementation safeguard: a model gets no more requests in this session after that many requests in a row have ended
+# for good without a reply, so that an outage or a wrong model name is not recorded as thousands of missing replies. The run can be resumed.
+retry:
+  max_attempts: 8
+  backoff_base_s: 1.0
+  backoff_factor: 2.0
+  backoff_max_s: 60.0
+  jitter: 0.2
+  timeout_s: 180.0
+  abort_statuses: [401, 403]
+  stop_after_consecutive_exhausted: 50
+
+# Budget. The unit prices are in the file below (it is marked `verified: false`; no stage waits for verification, and money is booked at the listed prices).
+# The cap is hard (the loader refuses more than 500) and is checked against two kinds of numbers:
+#   * the PROVABLE upper bound of one send: a token is at least one byte, so the input tokens are at most the UTF-8 bytes of the rendered message plus `template_margin_tokens` for the
+#     chat template, and the output tokens are at most `max_tokens` of the class (thinking tokens are output tokens). Before EVERY send, the CNY already booked (an attempt without a
+#     result counts at its reserved bound) plus the bound of this send must not pass `cap_cny`, else nothing more is sent. A reply whose usage is above its bound stops the whole run;
+#   * the ESTIMATE that decides whether a model starts: the requests still to send, each at its provable bound, or, once the model has measured usage, at the largest measured tokens per
+#     byte times `measured_factor`; times 1 + `reserve_margin`. The model starts only if the CNY already booked plus the estimate is at most `cap_cny`. An estimate that turns out too low
+#     only means that the run stops at the cap.
+# Money is booked when it is spent, at the price version of that day, and is never recomputed (the reports show a second column at the current prices). Each of the two token counts of a
+# reply's usage is booked on its own: a valid count is booked as the service reported it, a missing or invalid count is booked at its own bound (the input bound for the input count,
+# max_tokens for the output count). A numeric field is compared with the bound of its own send on the EXACT value: the reply is decoded without a float anywhere (an integer is an integer,
+# a decimal is a decimal with the digits it was written with), so 4.0000000000000001 is above a bound of 4 and 1e-999 is not zero. Above the bound it is a violation, whatever its size and
+# however it is written (1e18, 12.5); infinity and NaN are above every bound. Within the bound it is a count when it is a whole number (12, 12.0, 12.000, and zero in any writing, -0.0 too)
+# and is not a count when it is negative or has a fraction (-3, 12.5, -1e-999, 1e-999). A string, a boolean, null and an absent field are not a count. A count above its bound is booked as
+# reported (the only limit on an amount is the one of the number type, 10^300 CNY), stops the run at once and blocks every later real start and resume until a disposition has been recorded
+# (nmi/api_exp/lockout.py). The ledger keeps, for each of the two fields, the number that was booked, the kind of the reading (count, over, invalid, absent) and the text of the number as
+# the reply wrote it (for a number whose exponent the decimal type refuses, the text of the stand-in it was read as). A send that ended in a timeout, a damaged body or a 5xx (the service
+# may have processed it) is booked at the bound when `charge_unknown_at_bound` is set; 401, 403, 429 and other 4xx are booked at zero.
+# `reserve_margin` is fixed at 0.10 and the loader refuses another value.
+#
+# `send_quota_factor` is the number of REQUESTS, not money: every (stage, model) makes at most `planned keys x send_quota_factor` sends in all, over every
+# session and every run, rounded up (the probe of 100 questions, 600 keys: 660 sends). The planned keys of
+# the stage pilot are the keys it adds to the probe's. The count is that of the attempt records of the ledger and is checked before every send; at the quota nothing more is sent to that
+# model in that stage, the requests not done stay as they are and the stage does not count as completely ended. The rule of at most `retry.max_attempts` sends per request holds as well.
+# The loader refuses a factor above 1.1.
+prices:
+  file: configs/api_exp_prices.yaml
+
+budget:
+  cap_cny: 500
+  reserve_margin: 0.10
+  template_margin_tokens: 64
+  measured_factor: 1.25
+  send_quota_factor: 1.1
+  charge_unknown_at_bound: true
+
+# The one fixed state directory and the one repository that may send real requests. The loader refuses other values.
+state:
+  dir: /path/to/NMI/results/api_exp/_state
+  code_root: /path/to/NMI
+
+# May change between sessions: the number of requests in flight.
+runtime:
+  concurrency: 8
+
+# The pilot on the development pool, in two stages on one run directory per model. 1,000 questions x 6 waiting costs at a_H 0.80 and c0 0 = 6,000 requests per model.
+#   stage probe: the first 100 questions of the pool, 600 requests;
+#   stage pilot: all 1,000 questions, continuing the same run directory; it starts only when the model's probe has ended completely.
+# Its results are development data.
+pilot:
+  pool: mmlu_redux_cal
+  items_expected: 1000
+  a_H: [0.80]
+  c0: [0.0]
+  w: [0.0, 0.1, 0.2, 0.45, 0.8, 1.5]
+  stages:
+    probe: {items: 100}
+    pilot: {items: 1000}
+
+# The full run: 54 conditions on the 2,291 questions of the held-out pool. scripts/run_api_decisions.py has no code path that reads this pool: --mode full exits 2. The block records the
+# design; nothing reads `pool` here.
+full:
+  pool: mmlu_redux_holdout
+  items_expected: 2291
+  a_H: [0.60, 0.80, 0.95]
+  c0: [0.0, 0.1, 0.2]
+  w: [0.0, 0.1, 0.2, 0.45, 0.8, 1.5]
+
+# Same definitions as nmi/c1_confirm_stats.py (checked against its constants when the analysis runs): 2,000 item resamples with seed 0, the equivalence
+# margin delta 0.05, the dominated ask holds when the lower end of the interval at w = 1.5 is above 0.05, and a condition with fewer than 99% readable replies makes the contrasts that use
+# it untestable.
+analysis:
+  resamples: 2000
+  seed: 0
+  delta_eq: 0.05
+  dominated_lower: 0.05
+  min_valid_share: 0.99

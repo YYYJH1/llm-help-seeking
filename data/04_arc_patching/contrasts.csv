@@ -1,0 +1,41 @@
+setting,contrast,label_order,base_condition,source_condition,base_net_score,source_net_score,description
+new,equal_value_positive,0,new_04,new_26,0.5,0.5,Expert accuracy and cost raised together from paid help so that the expected consultation score is unchanged.
+new,equal_value_positive,1,new_05,new_27,0.5,0.5,Expert accuracy and cost raised together from paid help so that the expected consultation score is unchanged.
+new,equal_value_zero,0,new_00,new_24,0.7,0.7,Expert accuracy and cost raised together from free help so that the expected consultation score is unchanged.
+new,equal_value_zero,1,new_01,new_25,0.7,0.7,Expert accuracy and cost raised together from free help so that the expected consultation score is unchanged.
+new,first_cost,0,new_00,new_04,0.7,0.5,"Waiting cost raised from 0 to the first positive value (original 0.1, new 0.2); neutral wording, fee 0."
+new,first_cost,1,new_01,new_05,0.7,0.5,"Waiting cost raised from 0 to the first positive value (original 0.1, new 0.2); neutral wording, fee 0."
+new,fixed_fee_allocation,0,new_04,new_28,0.5,0.5,Waiting cost replaced by a fixed fee of the same size.
+new,fixed_fee_allocation,1,new_05,new_29,0.5,0.5,Waiting cost replaced by a fixed fee of the same size.
+new,positive_cost,0,new_04,new_08,0.5,-0.5,"Waiting cost raised from the first positive value to the high value (original 0.1 to 1.5, new 0.2 to 1.2); neutral wording."
+new,positive_cost,1,new_05,new_09,0.5,-0.5,"Waiting cost raised from the first positive value to the high value (original 0.1 to 1.5, new 0.2 to 1.2); neutral wording."
+new,semantic,0,new_04,new_06,0.5,0.5,Same cost stated as a neutral deduction (base) versus as a wait (source).
+new,semantic,1,new_05,new_07,0.5,0.5,Same cost stated as a neutral deduction (base) versus as a wait (source).
+new,subsidy,0,new_00,new_30,0.7,0.9,Negative cost (a bonus for asking) versus zero cost.
+new,subsidy,1,new_01,new_31,0.7,0.9,Negative cost (a bonus for asking) versus zero cost.
+new,unpenalized_duration,0,new_32,new_34,0.7,0.7,"Wait of 0 seconds mentioned (base) versus a wait of the longer delay (original 10 s, new 12 s), no deduction."
+new,unpenalized_duration,1,new_33,new_35,0.7,0.7,"Wait of 0 seconds mentioned (base) versus a wait of the longer delay (original 10 s, new 12 s), no deduction."
+new,unpenalized_mention_duration,0,new_00,new_34,0.7,0.7,"No wait mentioned (base) versus a wait of the longer delay mentioned, no deduction."
+new,unpenalized_mention_duration,1,new_01,new_35,0.7,0.7,"No wait mentioned (base) versus a wait of the longer delay mentioned, no deduction."
+new,unpenalized_mention_zero,0,new_00,new_32,0.7,0.7,"No wait mentioned (base) versus a wait of 0 seconds mentioned, no deduction."
+new,unpenalized_mention_zero,1,new_01,new_33,0.7,0.7,"No wait mentioned (base) versus a wait of 0 seconds mentioned, no deduction."
+original,equal_value_positive,0,orig_04,orig_26,0.7,0.7,Expert accuracy and cost raised together from paid help so that the expected consultation score is unchanged.
+original,equal_value_positive,1,orig_05,orig_27,0.7,0.7,Expert accuracy and cost raised together from paid help so that the expected consultation score is unchanged.
+original,equal_value_zero,0,orig_00,orig_24,0.8,0.8,Expert accuracy and cost raised together from free help so that the expected consultation score is unchanged.
+original,equal_value_zero,1,orig_01,orig_25,0.8,0.8,Expert accuracy and cost raised together from free help so that the expected consultation score is unchanged.
+original,first_cost,0,orig_00,orig_04,0.8,0.7,"Waiting cost raised from 0 to the first positive value (original 0.1, new 0.2); neutral wording, fee 0."
+original,first_cost,1,orig_01,orig_05,0.8,0.7,"Waiting cost raised from 0 to the first positive value (original 0.1, new 0.2); neutral wording, fee 0."
+original,fixed_fee_allocation,0,orig_04,orig_28,0.7,0.7,Waiting cost replaced by a fixed fee of the same size.
+original,fixed_fee_allocation,1,orig_05,orig_29,0.7,0.7,Waiting cost replaced by a fixed fee of the same size.
+original,positive_cost,0,orig_04,orig_08,0.7,-0.7,"Waiting cost raised from the first positive value to the high value (original 0.1 to 1.5, new 0.2 to 1.2); neutral wording."
+original,positive_cost,1,orig_05,orig_09,0.7,-0.7,"Waiting cost raised from the first positive value to the high value (original 0.1 to 1.5, new 0.2 to 1.2); neutral wording."
+original,semantic,0,orig_04,orig_06,0.7,0.7,Same cost stated as a neutral deduction (base) versus as a wait (source).
+original,semantic,1,orig_05,orig_07,0.7,0.7,Same cost stated as a neutral deduction (base) versus as a wait (source).
+original,subsidy,0,orig_00,orig_30,0.8,0.9,Negative cost (a bonus for asking) versus zero cost.
+original,subsidy,1,orig_01,orig_31,0.8,0.9,Negative cost (a bonus for asking) versus zero cost.
+original,unpenalized_duration,0,orig_32,orig_34,0.8,0.8,"Wait of 0 seconds mentioned (base) versus a wait of the longer delay (original 10 s, new 12 s), no deduction."
+original,unpenalized_duration,1,orig_33,orig_35,0.8,0.8,"Wait of 0 seconds mentioned (base) versus a wait of the longer delay (original 10 s, new 12 s), no deduction."
+original,unpenalized_mention_duration,0,orig_00,orig_34,0.8,0.8,"No wait mentioned (base) versus a wait of the longer delay mentioned, no deduction."
+original,unpenalized_mention_duration,1,orig_01,orig_35,0.8,0.8,"No wait mentioned (base) versus a wait of the longer delay mentioned, no deduction."
+original,unpenalized_mention_zero,0,orig_00,orig_32,0.8,0.8,"No wait mentioned (base) versus a wait of 0 seconds mentioned, no deduction."
+original,unpenalized_mention_zero,1,orig_01,orig_33,0.8,0.8,"No wait mentioned (base) versus a wait of 0 seconds mentioned, no deduction."

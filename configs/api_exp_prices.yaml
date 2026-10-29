@@ -1,0 +1,23 @@
+# Unit prices of the closed-model API experiment, in CNY per million tokens. This file is read by nmi/api_exp/prices.py.
+# It is not part of the configuration hash of configs/api_exp_v1.yaml, so replacing the prices does not stop a run from being continued.
+#
+# Rules of the file:
+#   * `version` is a whole number. When the prices change, the version goes up. A version is never reused with other numbers: the program remembers the md5 of every
+#     version it has been run with and refuses a changed file under an old version number.
+#   * `verified: true` is allowed only with `checked_on` (YYYY-MM-DD, the day the numbers were read from the provider console) and `source` (where they were read).
+#     It says what the numbers are; no stage of scripts/run_api_decisions.py waits for it.
+#   * Every model of the configuration (configs/api_exp_v1.yaml) has an entry, and nothing else does. Where a file api_exp_batches.yaml next to the configuration files lists several batches,
+#     every model of every batch has an entry, because the batches share one ledger and each of them prices the models of the others. There is no default price.
+#   * Every send is booked at the price version in force when it was sent and is never worked out again (the cost cap is checked against these booked amounts). A change of version changes
+#     the reserve of the requests not yet sent, and the reports show a second column with all tokens priced again at the current version.
+#   * For a reply of the endpoint kind openrouter, which reports the price of the call itself (`usage.cost`, US dollars), the amount booked is the LARGER of the tokens at the prices below and
+#     that price times 7.3: a call that cost more than the list price is booked at what it cost, and a reply that reports no price is booked from the tokens.
+
+version: 5
+verified: false
+checked_on: null
+source: "placeholder: the highest rate among the leads in hand for the first two models (12 CNY per million input tokens, 24 per million output tokens); not checked against the Bailian console."
+
+models:
+  deepseek-v4.1-flash: {input: 12, output: 24}
+  qwen3.5-plus-2026-04-20: {input: 12, output: 24}

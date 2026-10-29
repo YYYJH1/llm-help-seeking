@@ -1,0 +1,57 @@
+{
+ "dedup": {
+  "group_rule": "rows are grouped in file order by normalize(question); a group takes the question of its first row and the union of aliases, normalized_aliases and value of its rows (row by row, in this order, first appearance, blank strings dropped) as its answers",
+  "group_size_counts": {
+   "1": 1978,
+   "2": 7983
+  },
+  "n_groups": 9961,
+  "n_groups_inconsistent_answer_sets": 1,
+  "n_groups_inconsistent_normalized_answer_sets": 1,
+  "n_groups_without_answer": 0,
+  "n_rows": 17944
+ },
+ "format": 1,
+ "item_key_rule": "sha256(normalize(question) + '|' + normalize(first answer))",
+ "normalize_rule": "NFKC, lowercase, remove ASCII punctuation, remove the articles a/an/the, collapse whitespace",
+ "pilot": {
+  "file": "keys/triviaqa_s1_pilot.keys",
+  "in_pool": "triviaqa_s1_dev",
+  "md5": "84146bdd73d4513c1e2bcf0afd486a2c",
+  "n": 200,
+  "sha256": "138ab7c37e3cb58bc78d19c5483bc7a5c3e5750634139d892c05d766b5620f47"
+ },
+ "pools": {
+  "triviaqa_s1_dev": {
+   "bank": "triviaqa_s1",
+   "file": "keys/triviaqa_s1_dev.keys",
+   "md5": "8684ba8014a333c523a970df771248ac",
+   "n": 1000,
+   "sha256": "b0077ffbe69922531a65b4aa8701e37a52a808d47c44bb84381b2a5c5a47f577"
+  },
+  "triviaqa_s1_sealed": {
+   "bank": "triviaqa_s1",
+   "file": "keys/triviaqa_s1_sealed.keys",
+   "md5": "e2d566aa14ae97c78adc39592fda9b88",
+   "n": 2000,
+   "sha256": "21eb48b245de2093ee3a4dcd4a2b570f01d86124fc715e6c6e5398a884105e79"
+  }
+ },
+ "selection": {
+  "development_n": 1000,
+  "pilot_n": 200,
+  "pool_order": "file order of the first row of the group",
+  "rule": "dev = the pilot groups + the 800 other groups with the smallest sha256('<seed>|development|<key>'); sealed = the 2000 groups with the smallest sha256('<seed>|sealed|<key>') among the groups in neither; both pools in the file order of the first row of the group",
+  "sealed_n": 2000,
+  "seed": 20261011
+ },
+ "source": {
+  "config": "rc.nocontext",
+  "dataset": "mandarjoshi/trivia_qa",
+  "file": "validation-00000-of-00001.parquet",
+  "revision": "0f7faf33a3908546c6fd5b73a660e0f8ff173c2f",
+  "sha256": "48a5005c0eb4f8a4ae5b9868644297fd5bf1e694aeb3dc9c8ab958cac0d5b201",
+  "split": "validation"
+ },
+ "version": "s1_triviaqa_v1"
+}
