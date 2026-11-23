@@ -6,7 +6,7 @@ Fig. 5: Qwen3-4B, Gemma-4-E4B-it and SmolLM3-3B before and after fine-tuning, ev
 python data/05_training/recompute_training.py
 ```
 
-Model runs use [train_part3_b.py](../../scripts/train_part3_b.py), [train_part3_b_qr.py](../../scripts/train_part3_b_qr.py) and [run_part3_b_eval.py](../../scripts/run_part3_b_eval.py). Training reads base-model confidence from your own `run_calib.py` outputs (`W5_SOURCES` in `scripts/_part3_b_prompts.py`), and the evaluation also needs the unreleased inputs of [04_arc_patching](../04_arc_patching/README.md).
+Model runs use [train_part3_b.py](https://github.com/YYYJH1/llm-help-seeking/blob/v1.0.0/scripts/train_part3_b.py), [train_part3_b_qr.py](https://github.com/YYYJH1/llm-help-seeking/blob/v1.0.0/scripts/train_part3_b_qr.py) and [run_part3_b_eval.py](https://github.com/YYYJH1/llm-help-seeking/blob/v1.0.0/scripts/run_part3_b_eval.py) from tag v1.0.0. Training reads base-model confidence from the outputs of your own `run_calib.py` runs, with the paths set in [scripts/_part3_b_prompts.py](https://github.com/YYYJH1/llm-help-seeking/blob/v1.0.0/scripts/_part3_b_prompts.py), and the evaluation also needs the unreleased inputs of [04_arc_patching](../04_arc_patching/README.md).
 
 ## Files and fields
 

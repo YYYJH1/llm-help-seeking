@@ -13,7 +13,6 @@ The script reproduces all eight original Figure 6 gain estimates and intervals b
 | `scoring_flags.parquet` | Original expert/assistant correctness under four scoring rules, raw confidence and hashed question keys. `alias` identifies the original table; decimal model names use `p` in these aliases. No question or answer text. |
 | `sensitivity_calibration.csv` | Archived development-set logistic fits for each model and scoring rule. `original_gate_valid` retains the original diagnostic; all eight displayed models remain in the comparison. |
 | `published_primary_gains.csv` | Original Figure 6 estimates and 95% interval endpoints for the reproducibility check. |
-| `source_hashes.json` | Original input hashes and archived-analysis provenance. |
 | `cost_direction_magnitude.csv` | Original cost-response categories, separate direction labels and interval containment within five percentage points. Values are proportions. |
 | `calibration_diagnostics.csv`, `calibration_bins.csv` | Ten-bin calibration error and bin-level confidence/accuracy on the 2,291 main questions per model. |
 | `triviaqa_scoring_sensitivity.csv` | Fixed-answer routing gains under primary, exact-alias, negation and short-alias-boundary scores. |

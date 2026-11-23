@@ -6,7 +6,7 @@ Figs. 1 and 2: seven models answer 2,291 MMLU-Redux questions under 54 combinati
 python data/01_main_experiment/recompute_main_experiment.py
 ```
 
-Add `--no-coefficient-bootstrap` for a quick run. Model runs use [run_calib.py](../../scripts/run_calib.py) and [run_c1_confirm.py](../../scripts/run_c1_confirm.py) (see the [main README](../../README.md#rerun-the-experiments)).
+Add `--no-coefficient-bootstrap` for a quick run. Model runs use [run_calib.py](https://github.com/YYYJH1/llm-help-seeking/blob/v1.0.0/scripts/run_calib.py) and [run_c1_confirm.py](https://github.com/YYYJH1/llm-help-seeking/blob/v1.0.0/scripts/run_c1_confirm.py) from tag v1.0.0 (see the [main README](../../README.md#rerun-the-experiments)).
 
 ## Files and fields
 

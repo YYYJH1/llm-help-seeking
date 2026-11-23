@@ -6,7 +6,7 @@ Fig. 4a: seven models receive 400 numerical combinations of own accuracy `p`, ex
 python data/03_numeric_tasks/recompute_numeric_tasks.py
 ```
 
-Model runs use [run_explicit_numbers.py](../../scripts/run_explicit_numbers.py); its `build` subcommand regenerates the combinations on a CPU.
+Model runs use [run_explicit_numbers.py](https://github.com/YYYJH1/llm-help-seeking/blob/v1.0.0/scripts/run_explicit_numbers.py) from tag v1.0.0; its `build` subcommand regenerates the combinations on a CPU.
 
 ## Files and fields
 

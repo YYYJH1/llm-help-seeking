@@ -6,7 +6,7 @@ Fig. 3a–e: the seven models and 2,291 questions of the main experiment under 4
 python data/02_behaviour_controls/recompute_behaviour_controls.py
 ```
 
-Model runs use [run_mechanism_confirm.py](../../scripts/run_mechanism_confirm.py).
+Model runs use [run_mechanism_confirm.py](https://github.com/YYYJH1/llm-help-seeking/blob/v1.0.0/scripts/run_mechanism_confirm.py) from tag v1.0.0.
 
 ## Files and fields
 

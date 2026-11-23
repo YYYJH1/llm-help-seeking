@@ -6,7 +6,7 @@ Extended Data Fig. 1: 46 models from nine developers, open-weight or accessed th
 python data/07_models78/recompute_models78.py
 ```
 
-Model runs use [run_local_decisions.py](../../scripts/run_local_decisions.py) and [run_api_decisions.py](../../scripts/run_api_decisions.py).
+Model runs use [run_local_decisions.py](https://github.com/YYYJH1/llm-help-seeking/blob/v1.0.0/scripts/run_local_decisions.py) and [run_api_decisions.py](https://github.com/YYYJH1/llm-help-seeking/blob/v1.0.0/scripts/run_api_decisions.py) from tag v1.0.0.
 
 ## Files and fields
 

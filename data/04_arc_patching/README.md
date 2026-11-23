@@ -6,7 +6,7 @@ Figs. 3f and 4b–f and Extended Data Fig. 2: three models on 512 ARC-Challenge 
 python data/04_arc_patching/recompute_arc.py
 ```
 
-Model runs use [select_mechanism_sites.py](../../scripts/select_mechanism_sites.py), [run_mechanism_internal.py](../../scripts/run_mechanism_internal.py) and [run_mechanism_rescue.py](../../scripts/run_mechanism_rescue.py). They need frozen study inputs that are not released; `patching_sites.csv` records the selected sites.
+Model runs use [select_mechanism_sites.py](https://github.com/YYYJH1/llm-help-seeking/blob/v1.0.0/scripts/select_mechanism_sites.py), [run_mechanism_internal.py](https://github.com/YYYJH1/llm-help-seeking/blob/v1.0.0/scripts/run_mechanism_internal.py) and [run_mechanism_rescue.py](https://github.com/YYYJH1/llm-help-seeking/blob/v1.0.0/scripts/run_mechanism_rescue.py) from tag v1.0.0. They need frozen study inputs that are not released; `patching_sites.csv` records the selected sites.
 
 ## Files and fields
 

@@ -6,7 +6,7 @@ Fig. 6: eight assistant models answer TriviaQA questions or call `ask_edge_exper
 python data/06_triviaqa_expert/recompute_triviaqa_expert.py
 ```
 
-Model runs use [run_scenario_confirm.py](../../scripts/run_scenario_confirm.py) (see the [main README](../../README.md#rerun-the-experiments)).
+Model runs use [run_scenario_confirm.py](https://github.com/YYYJH1/llm-help-seeking/blob/v1.0.0/scripts/run_scenario_confirm.py) from tag v1.0.0 (see the [main README](../../README.md#rerun-the-experiments)).
 
 ## Files and fields
 

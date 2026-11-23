@@ -19,7 +19,7 @@ Parquet files are read with `pandas.read_parquet`. Probabilities are on a 0–1 
 
 ## Datasets and identifiers
 
-Question text is not redistributed. Questions are identified by `item_key`, the SHA-256 of the normalized question and correct answer, and `mmlu_redux_items.csv` and the `items.csv` files map the keys to dataset rows. `splits/` holds the frozen question pools that the experiment code reads.
+Question text is not redistributed. Questions are identified by `item_key`, the SHA-256 of the normalized question and correct answer, and `mmlu_redux_items.csv` and the `items.csv` files map the keys to dataset rows. The frozen question pools that the experiment code reads are in [data/splits/](https://github.com/YYYJH1/llm-help-seeking/tree/v1.0.0/data/splits) at tag v1.0.0.
 
 | Dataset | Revision | Licence/source |
 |---|---|---|
